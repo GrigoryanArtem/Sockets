@@ -9,14 +9,15 @@ namespace Sockets.Chat.Model
         public MessageCode Code { get; private set; }
         public DateTime Date { get; private set; }
         public string Message { get; private set; }
-        public string Sender { get; private set; }
-        public string Recipient { get; private set; }
+        public ChatUser Sender { get; private set; }
+        public ChatUser Recipient { get; private set; }
 
-        public ChatMessage(MessageCode code, string sender, DateTime date, string message)
+        public ChatMessage(MessageCode code, ChatUser sender, ChatUser recipient, DateTime date, string message)
         {
             Code = code;
             Date = date;
             Sender = sender;
+            Recipient = recipient;
             Message = message;
         }
 
@@ -27,12 +28,12 @@ namespace Sockets.Chat.Model
 
         public override string ToString()
         {
-            return $"{{{(int)Code}, \"{Sender}\", {Date}, \"{Message}\"}}";
+            return $"{{{(int)Code}, \"{Sender}\", \"{Recipient}\", {Date}, \"{Message}\"}}";
         }
 
-        public static ChatMessage Create(MessageCode code, string sender, DateTime date, string message)
+        public static ChatMessage Create(MessageCode code, ChatUser sender, ChatUser recipient, DateTime date, string message)
         {
-            return new ChatMessage(code, sender, date, message);
+            return new ChatMessage(code, sender, recipient, date, message);
         }
 
         public static ChatMessage Parse(string input)
@@ -43,10 +44,11 @@ namespace Sockets.Chat.Model
 
             MessageCode code = (MessageCode)Convert.ToInt32(match.Groups["code"].Value);
             DateTime date = DateTime.Parse(match.Groups["date"].Value);
-            string sender = match.Groups["sender"].Value;
+            ChatUser sender = ChatUser.Parse(match.Groups["sender"].Value);
+            ChatUser recipient = ChatUser.Parse(match.Groups["recipient"].Value);
             string message = match.Groups["message"].Value;
 
-            return Create(code, sender, date, message);
+            return Create(code, sender, recipient, date, message);
         }
     }
 }

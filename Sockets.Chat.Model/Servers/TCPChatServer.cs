@@ -4,37 +4,43 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Sockets.Chat.Model.Servers
 {
-    public class TCPChatServer
+    public abstract class TCPChatServer : ITCPChatServer
     {
         #region Members
 
         private readonly object _lock = new object();
-        private ILogger mLogger;
 
-        protected Dictionary<int, TcpClient> mClients = new Dictionary<int, TcpClient>();
-        protected Dictionary<int, string> mClientsNames = new Dictionary<int, string>();
+        private MessageHandlersService mMessageHandlers;
 
         #endregion
 
         #region Properties
 
-        public string ServerName { get; set; }
+        public ChatUser ServerUser { get; set; }
         public int Port { get; set; }
+
+        protected ChatClients Clients { get; private set; } = new ChatClients();
+        protected ILogger Logger { get; private set; }
 
         #endregion
 
         public TCPChatServer(int port, string serverName, ILogger logger = null)
         {
-            Port = port;
-            ServerName = serverName;
+            lock (_lock)
+            {
+                Port = port;
+                ServerUser = new ChatUser(Constants.ServerId, serverName);
 
-            mLogger = logger ?? ConsoleLogger.Instance;
+                Logger = logger ?? ConsoleLogger.Instance;
+            }
+
+            mMessageHandlers = new MessageHandlersService(this);
         }
 
         #region Public methods
@@ -46,22 +52,19 @@ namespace Sockets.Chat.Model.Servers
             TcpListener ServerSocket = new TcpListener(IPAddress.Any, Port);
             ServerSocket.Start();
 
-            mLogger.Info($"{DateTime.Now} | Server started at {GlobalIPAddress.GetGlobalIPAddress()}:{Port}");
+            Logger.Info($"Server \"{ServerUser.Name}\" started at {GlobalIPAddress.GetGlobalIPAddress()}:{Port}");
 
             while (true)
             {
                 TcpClient client = ServerSocket.AcceptTcpClient();
 
                 lock (_lock)
-                {
-                    mClientsNames.Add(currentId, Constants.DefaultName + currentId);
-                    mClients.Add(currentId, client);
-                }
-                
-                SendMessage(currentId, ChatMessage.Create(MessageCode.ServerName, 
-                    ServerName,DateTime.Now, String.Empty));
+                    Clients.Add(currentId, client);
 
-                mLogger.Debug($"{DateTime.Now} | {mClientsNames[currentId]} connected!");
+                SendMessage(ChatMessage.Create(MessageCode.ServerName, ServerUser,
+                    new ChatUser(currentId), DateTime.Now, String.Empty), currentId);
+
+                Logger.Debug($"#{currentId} connected!");
 
                 Thread t = new Thread(HandleClients);
                 t.Start(currentId);
@@ -72,79 +75,87 @@ namespace Sockets.Chat.Model.Servers
 
         #endregion
 
+        #region Protected methods
+
+        protected abstract void OnNewMessage();
+
+        protected void SendMessage(ChatMessage message, int clientId)
+        {
+            SendMessage(message, Clients[clientId]);
+        }
+
+        protected void SendMessage(ChatMessage message, params int[] clientIds)
+        {
+            SendMessage(message, Clients.GetRegisteredClients(clientIds));
+        }
+
+        protected void Broadcast(ChatMessage message)
+        {
+            SendMessage(message, Clients.RegestredClients);
+        }
+
+        #endregion
+
+        #region Private methods
+
         private void HandleClients(object clientId)
         {
             int id = (int)clientId;
             TcpClient client;
 
             lock (_lock)
-                client = mClients[id];
+                client = Clients[id];
 
             try
             {
                 while (true)
                 {
                     NetworkStream stream = client.GetStream();
-                    byte[] buffer = new byte[1024];
+                    byte[] buffer = new byte[Constants.MessageSize];
                     int byte_count = stream.Read(buffer, 0, buffer.Length);
 
                     if (byte_count == 0)
                         break;
 
-                    string data = Encoding.ASCII.GetString(buffer, 0, byte_count);
-                    var message = ChatMessage.Parse(data);
-
-                    if (message.Sender != mClientsNames[id])
-                    {                  
-                        mClientsNames[id] = message.Sender;
-                        mLogger.Debug($"{DateTime.Now} | {Constants.DefaultName}{id} renamed to {mClientsNames[id]}.");
-                    }
-
-
-                    Broadcast(message);
-                    mLogger.Debug($"{DateTime.Now} | {mClientsNames[id]} sent message");
+                    string data = Encoding.UTF8.GetString(buffer, 0, byte_count);
+                    HandleMessage(ChatMessage.Parse(data));
                 }
             }
-            catch
+            catch(Exception e)
             {
-                mLogger.Error($"{DateTime.Now} | Error: {mClientsNames[id]} lost connection.");
+                Logger.Error(e.Message);
+                Logger.Error($"Error: #{id} lost connection.");
             }
             finally
             {
-                var clientName = mClientsNames[id];
                 lock (_lock)
-                {
-                    mClients.Remove(id);
-                    mClientsNames.Remove(id);
-                }
+                    Clients.Remove(id);
 
-                mLogger.Debug($"{DateTime.Now} | {clientName} has left.");
+                Logger.Debug($"#{id} has left.");
 
                 client.Client.Shutdown(SocketShutdown.Both);
                 client.Close();
             }
         }
 
-        #region Protected methods
-
-        protected void SendMessage(int clientId, ChatMessage message)
+        private void HandleMessage(ChatMessage message)
         {
-            byte[] buffer = message.ToByteArray();
-
-            lock (_lock)
-            {
-                NetworkStream stream = mClients[clientId].GetStream();
-                stream.Write(buffer, 0, buffer.Length);
-            }
+            OnNewMessage();
+            mMessageHandlers.Invoke(message);
         }
 
-        protected void Broadcast(ChatMessage message)
+        private void SendMessage(ChatMessage message, params TcpClient[] clients)
+        {
+            SendMessage(message, clients.Select(client => client));
+        }
+
+        private void SendMessage(ChatMessage message, IEnumerable<TcpClient> clients)
         {
             byte[] buffer = message.ToByteArray();
 
             lock (_lock)
             {
-                foreach (TcpClient c in mClients.Values)
+                foreach (TcpClient c in clients)
                 {
                     NetworkStream stream = c.GetStream();
 
@@ -152,11 +163,6 @@ namespace Sockets.Chat.Model.Servers
                 }
             }
         }
-
-        #endregion
-
-        #region Private methods
-
 
         #endregion  
     }

@@ -48,7 +48,7 @@ namespace Sockets.Chat.Model.Loggers
         private void WriteColoredMessage(string message, ConsoleColor color)
         {
             Console.ForegroundColor = color;
-            Console.WriteLine(message);
+            Console.WriteLine($"{DateTime.Now} | {message}");
             Console.ResetColor();
         }
     }

@@ -7,18 +7,15 @@ namespace Sockets.Chat.Model
     {
         #region Members
 
-        public int Id { get; private set; }
-        public string Name { get; private set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
 
         #endregion
 
 
-        public ChatUser(int id, string name)
+        public ChatUser(int id, string name = null)
         {
-            if (String.IsNullOrEmpty(name) || String.IsNullOrWhiteSpace(name))
-                throw new ArgumentNullException(name);
-
-            Name = name;
+            Name = name ?? String.Empty;
             Id = id;
         }
 
@@ -29,6 +26,9 @@ namespace Sockets.Chat.Model
 
         public static ChatUser Parse(string user)
         {
+            if (String.IsNullOrEmpty(user) || String.IsNullOrWhiteSpace(user))
+                return null;
+
             RegexOptions options = RegexOptions.Multiline;
 
             var match = Regex.Match(user, Constants.UserRegex, options);

@@ -53,7 +53,11 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Loggers\ILogger.cs" />
     <Compile Include="MessageCode.cs" />
+    <Compile Include="MessageHandlersService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Servers\DefaultTCPChatServer.cs" />
+    <Compile Include="Servers\ITCPChatServer.cs" />
+    <Compile Include="Servers\MessageHandlerAttribute.cs" />
     <Compile Include="Servers\TCPChatServer.cs" />
   </ItemGroup>
   <ItemGroup>

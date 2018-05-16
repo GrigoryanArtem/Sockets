@@ -108,6 +108,7 @@
                         </Grid.ColumnDefinitions>
 
                         <TextBox
+                            MaxLength="450"
                             x:Name="ctrlMessageTB"
                             Padding="2 0"
                             Margin="3"

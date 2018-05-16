@@ -1,4 +1,6 @@
 ﻿using Sockets.Chat.Model;
+using Sockets.Chat.Model.Loggers;
+using Sockets.Chat.Model.Servers;
 using System;
 
 namespace Sockets.Chat.Server.CUI
@@ -9,7 +11,7 @@ namespace Sockets.Chat.Server.CUI
         {
             try
             {
-                TCPChatServer server = new TCPChatServer(11000, "WPF THE BEST!");
+                ITCPChatServer server = new DefaultTCPChatServer(11000, "Server");
                 server.Start();
             }
             catch(Exception e)

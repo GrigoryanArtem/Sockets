@@ -20,14 +20,14 @@ namespace Sockets.Chat.Client.GUI.Models
 
         private TCPChatCore mChatCore;
 
-        private string mUserName;
+        private ChatUser mUser;
         private string mServerName;
 
         #endregion
 
         public TCPChat(string username, string ipAddress)
         {
-            mUserName = username;
+            mUser = new ChatUser(0, username);
             mChatCore = new TCPChatCore(ipAddress, Properties.Settings.Default.Port);
         }
 
@@ -74,7 +74,7 @@ namespace Sockets.Chat.Client.GUI.Models
         public void SendMessage(string message)
         {
             SendMessage(ChatMessage.Create(MessageCode.Message, 
-                mUserName, DateTime.Now, message));
+                mUser, null, DateTime.Now, message));
         }
 
         private void ReceiveData(TcpClient client)
@@ -89,13 +89,13 @@ namespace Sockets.Chat.Client.GUI.Models
 
                 if (message.Code == MessageCode.Message)
                     Application.Current.Dispatcher.Invoke(() => Messages.Add(
-                        ProxyChatMessage.CurrentUserMessage(message, message.Sender == mUserName)));
-                else if (message.Code == MessageCode.ServerName)
-                    ServerName = message.Sender;
-                else if (message.Code == MessageCode.NewUser)
-                    Application.Current.Dispatcher.Invoke(() => Users.Add(message.Message));
-                else if (message.Code == MessageCode.UserLeave)
-                    Application.Current.Dispatcher.Invoke(() => Users.Remove(message.Message));
+                        ProxyChatMessage.CurrentUserMessage(message, message.Sender == mUser)));
+                else if(message.Code == MessageCode.ServerName){
+                    mServerName = message.Sender.Name;
+
+                    mUser.Id = message.Recipient.Id;
+                    SendMessage(ChatMessage.Create(MessageCode.Registration, mUser, new ChatUser(0, mServerName), DateTime.Now, String.Empty));
+                }
             }
         }
 

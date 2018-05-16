@@ -5,7 +5,7 @@ namespace Sockets.Chat.Client.GUI.Models
     public class ProxyChatMessage : ChatMessage
     {
         public ProxyChatMessage(ChatMessage message, bool isCurrentUserMessage)
-            : base(message.Code, message.Sender, message.Date, message.Message)
+            : base(message.Code, message.Sender, null, message.Date, message.Message)
         {
             IsCurrentUserMessage = isCurrentUserMessage;
         }
