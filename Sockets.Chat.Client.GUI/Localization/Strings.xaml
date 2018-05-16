@@ -1,0 +1,14 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:Sockets.Chat.Client.GUI.Localization"
+                    xmlns:v  ="clr-namespace:System;assembly=mscorlib">
+    <v:String x:Key="rProjectName">MINIMAL</v:String>
+    <v:String x:Key="rUsername">Your name</v:String>
+    <v:String x:Key="rServerAddress">Server ip-address</v:String>
+    <v:String x:Key="rConnect">Let's go!</v:String>
+    <v:String x:Key="rCopyright">© Artem Grigoryan 2018</v:String>
+    <v:String x:Key="rSend">Send</v:String>
+    <v:String x:Key="rMessage">Your message...</v:String>
+    <v:String x:Key="rDisconnect">Disconnect</v:String>
+    <v:String x:Key="rUsers">Users</v:String>
+</ResourceDictionary>
