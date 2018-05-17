@@ -2,6 +2,6 @@
 {
     internal static class TCPChatConstants
     {
-        internal static int DefaultMessageSize => 2014;
+        internal static int DefaultMessageSize => 2048;
     }
 }

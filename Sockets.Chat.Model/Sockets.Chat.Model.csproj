@@ -48,6 +48,8 @@
     <Compile Include="ChatClients.cs" />
     <Compile Include="ChatMessage.cs" />
     <Compile Include="ChatUser.cs" />
+    <Compile Include="Clients\ITCPChatClient.cs" />
+    <Compile Include="Clients\TCPChatCore.cs" />
     <Compile Include="GlobalIPAddress.cs" />
     <Compile Include="Loggers\ConsoleLogger.cs" />
     <Compile Include="Constants.cs" />

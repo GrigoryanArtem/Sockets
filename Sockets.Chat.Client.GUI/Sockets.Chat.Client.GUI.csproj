@@ -88,7 +88,6 @@
     <Compile Include="Models\ScrollScroller.cs" />
     <Compile Include="Models\TCPChat.cs" />
     <Compile Include="Models\TCPChatConstants.cs" />
-    <Compile Include="Models\TCPChatCore.cs" />
     <Compile Include="Models\ValidationRules\IpAddressRule.cs" />
     <Compile Include="Models\ValidationRules\UserNameRule.cs" />
     <Compile Include="Models\ValidationRules\ValidationConstants.cs" />

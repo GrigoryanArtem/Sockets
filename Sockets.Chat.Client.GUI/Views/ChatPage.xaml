@@ -53,7 +53,8 @@
                         ItemsSource="{Binding Users}"
                         Grid.Row="1"
                         x:Name="DemoItemsListBox"
-                        Margin="0 16 0 16">
+                        Margin="0 16 0 16"
+                        DisplayMemberPath="Name">
                     </ListView>
                 </Grid>
             </materialDesign:DrawerHost.LeftDrawerContent>
@@ -174,7 +175,7 @@
                                                     DockPanel.Dock="Left"
                                                     VerticalAlignment="Center"
                                                     Style="{StaticResource MaterialDesignBody2TextBlock}"
-                                                    Text="{Binding Sender}"/>
+                                                    Text="{Binding Sender.Name}"/>
 
                                                 <TextBlock 
                                                     DockPanel.Dock="Right"

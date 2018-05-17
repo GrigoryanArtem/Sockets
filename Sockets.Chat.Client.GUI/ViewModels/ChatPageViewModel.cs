@@ -69,7 +69,7 @@ namespace Sockets.Chat.Client.GUI.ViewModels
             }
         }
 
-        public ObservableCollection<string> Users
+        public ObservableCollection<ChatUser> Users
         {
             get
             {

@@ -23,7 +23,7 @@ namespace Sockets.Chat.Model
 
         public byte[] ToByteArray()
         {
-            return Encoding.ASCII.GetBytes(ToString());
+            return Encoding.UTF8.GetBytes(ToString());
         }
 
         public override string ToString()

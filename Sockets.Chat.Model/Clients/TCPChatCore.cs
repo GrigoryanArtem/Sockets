@@ -1,16 +1,10 @@
-﻿using Sockets.Chat.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
-namespace Sockets.Chat.Client.GUI.Models
+namespace Sockets.Chat.Model.Clients
 {
-    public class TCPChatCore
+    public class TCPChatCore : ITCPChatClient
     {
         #region Members
 
@@ -27,7 +21,7 @@ namespace Sockets.Chat.Client.GUI.Models
         }
 
         #region Properties
-        
+
         public int Port { get; set; }
         public IPAddress IPAddress { get; set; }
 
@@ -44,7 +38,6 @@ namespace Sockets.Chat.Client.GUI.Models
 
             mReceiveDataThread.Start(mClient);
         }
-
 
         public void Disconnect()
         {

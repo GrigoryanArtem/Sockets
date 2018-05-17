@@ -1,5 +1,6 @@
 ﻿using Sockets.Chat.Model.Loggers;
 using System;
+using System.Linq;
 
 namespace Sockets.Chat.Model.Servers
 {
@@ -8,7 +9,10 @@ namespace Sockets.Chat.Model.Servers
         public DefaultTCPChatServer(int port, string serverName, ILogger logger = null)
             : base(port, serverName, logger) { }
 
-        protected override void OnNewMessage() { }
+        protected override void OnNewMessage(ChatMessage message)
+        {
+            Logger.Debug($"{message.Sender} sent message. {message}");
+        }
 
         #region Handlers
 
@@ -19,16 +23,14 @@ namespace Sockets.Chat.Model.Servers
 
             Clients.Registration(message.Sender.Id, message.Sender.Name);
             
-            Broadcast(ChatMessage.Create(MessageCode.NewUser, ServerUser, null, DateTime.Now, String.Empty));
+            Broadcast(ChatMessage.Create(MessageCode.NewUser, ServerUser, null, DateTime.Now, message.Sender.ToString()));
             SendMessage(ChatMessage.Create(MessageCode.ServerUsers, ServerUser, message.Sender,
-                DateTime.Now, String.Join(" ", Clients.RegestredUsers)));
+                DateTime.Now, String.Join(" ", Clients.RegestredUsers.Where(user => user.Id != message.Sender.Id))), message.Sender.Id);
         }
 
         [MessageHandler(MessageCode.Message)]
-        private void OnNewMessage(ChatMessage message)
+        private void OnNewUserMessage(ChatMessage message)
         {
-            Logger.Debug($"{message.Sender} sent message. {message}");
-
             if (message.Recipient is null)
                 Broadcast(message);
             else

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 
@@ -77,7 +76,7 @@ namespace Sockets.Chat.Model.Servers
 
         #region Protected methods
 
-        protected abstract void OnNewMessage();
+        protected abstract void OnNewMessage(ChatMessage message);
 
         protected void SendMessage(ChatMessage message, int clientId)
         {
@@ -131,6 +130,8 @@ namespace Sockets.Chat.Model.Servers
                 lock (_lock)
                     Clients.Remove(id);
 
+                Broadcast(ChatMessage.Create(MessageCode.UserLeave, ServerUser, null, DateTime.Now, id.ToString()));
+
                 Logger.Debug($"#{id} has left.");
 
                 client.Client.Shutdown(SocketShutdown.Both);
@@ -140,7 +141,7 @@ namespace Sockets.Chat.Model.Servers
 
         private void HandleMessage(ChatMessage message)
         {
-            OnNewMessage();
+            OnNewMessage(message);
             mMessageHandlers.Invoke(message);
         }
 
