@@ -6,11 +6,11 @@ namespace Sockets.Chat.Model
 {
     public class ChatMessage
     {
-        public MessageCode Code { get; private set; }
-        public DateTime Date { get; private set; }
-        public string Message { get; private set; }
-        public ChatUser Sender { get; private set; }
-        public ChatUser Recipient { get; private set; }
+        public MessageCode Code { get; set; }
+        public DateTime Date { get; set; }
+        public string Message { get; set; }
+        public ChatUser Sender { get; set; }
+        public ChatUser Recipient { get; set; }
 
         public ChatMessage(MessageCode code, ChatUser sender, ChatUser recipient, DateTime date, string message)
         {

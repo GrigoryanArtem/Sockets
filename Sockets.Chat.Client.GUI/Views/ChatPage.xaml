@@ -15,7 +15,8 @@
         <ResourceDictionary>
             <convertors:EmptyToVisibleConverter x:Key="ETVConverter" />
             <convertors:BoolToHorizontalAlignmentConverter x:Key="BHAConverter" />
-            <convertors:ScrollToBollConverter x:Key="ScrollConverter" />
+            <convertors:MessageTypeToColorZoneModeConverter x:Key="BTCZMonverter" />
+            <convertors:ScrollToBoolConverter x:Key="ScrollConverter" />
         </ResourceDictionary>
     </Page.Resources>
 
@@ -140,61 +141,72 @@
                     </Grid>
                 </materialDesign:Card>
 
-                <ScrollViewer
-                    x:Name="ctrlScroll"
-                    models:ScrollScroller.AutoScroll="True"
-                    VerticalScrollBarVisibility="Auto">
+                <Grid>
+                    <ScrollViewer
+                        x:Name="ctrlScroll"
+                        models:ScrollScroller.AutoScroll="True"
+                        VerticalScrollBarVisibility="Auto">
 
-                    <ItemsControl
-                        Margin="0 3 0 0"
-                        ItemsSource="{Binding Messages}">
+                        <ItemsControl
+                            Margin="0 3 0 0"
+                            ItemsSource="{Binding Messages}">
 
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Vertical"/>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <GroupBox  
-                                    HorizontalAlignment="{Binding IsCurrentUserMessage, Converter={StaticResource BHAConverter}}"
-                                    MaxWidth="300" MinWidth="175"
-                                    Width="auto"
-                                    Padding="9 5"
-                                    Margin="6"
-                                    Header="{Binding}" 
-                                    Style="{DynamicResource MaterialDesignCardGroupBox}"
-                                    materialDesign:ColorZoneAssist.Mode="PrimaryLight">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Vertical"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <GroupBox  
+                                        Style="{DynamicResource MaterialDesignCardGroupBox}"
+                                        HorizontalAlignment="{Binding IsCurrentUserMessage, Converter={StaticResource BHAConverter}}"
+                                        MaxWidth="300" MinWidth="175"
+                                        Width="auto"
+                                        Padding="9 5"
+                                        Margin="6"
+                                        Header="{Binding}"
+                                        materialDesign:ColorZoneAssist.Mode="{Binding MessageType, Converter={StaticResource BTCZMonverter}}">
 
-                                    <GroupBox.HeaderTemplate>
-                                        <DataTemplate>
-                                            <DockPanel 
-                                                LastChildFill="False">
+                                        <GroupBox.HeaderTemplate>
+                                            <DataTemplate>
+                                                <DockPanel 
+                                                       LastChildFill="False">
 
-                                                <TextBlock 
-                                                    DockPanel.Dock="Left"
-                                                    VerticalAlignment="Center"
-                                                    Style="{StaticResource MaterialDesignBody2TextBlock}"
-                                                    Text="{Binding Sender.Name}"/>
 
-                                                <TextBlock 
-                                                    DockPanel.Dock="Right"
-                                                    VerticalAlignment="Center"
-                                                    Style="{StaticResource MaterialDesignCaptionTextBlock}"
-                                                    FontSize="11"
-                                                    Text="{Binding Date, StringFormat=hh:mm tt}"/>
-                                            </DockPanel>
-                                        </DataTemplate>
-                                    </GroupBox.HeaderTemplate>
+                                                    <TextBlock 
+                                                        DockPanel.Dock="Left"
+                                                        VerticalAlignment="Center"
+                                                        Style="{StaticResource MaterialDesignBody2TextBlock}"
+                                                        Text="{Binding Sender.Name}"
+                                                        ToolTip="{Binding Sender}"/>
 
-                                    <TextBlock 
-                                        TextWrapping="Wrap"
-                                        Text="{Binding Message}"/>
-                                </GroupBox>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
+                                                    <TextBlock 
+                                                        DockPanel.Dock="Right"
+                                                        VerticalAlignment="Center"
+                                                        Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                                                        FontSize="11"
+                                                        Text="{Binding Date, StringFormat=hh:mm tt}"/>
+                                                </DockPanel>
+                                            </DataTemplate>
+                                        </GroupBox.HeaderTemplate>
+
+                                        <TextBlock 
+                                            TextWrapping="Wrap"
+                                            Text="{Binding Message}"/>
+                                    </GroupBox>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+
+                    <materialDesign:Snackbar
+                        Margin="0 0 0 -5"
+                        MessageQueue="{Binding NotificationQueue}"
+                        DockPanel.Dock="Top"
+                        HorizontalAlignment="Center"
+                        x:Name="SnackbarThree" />
+                </Grid>
             </DockPanel>
             
         </materialDesign:DrawerHost>

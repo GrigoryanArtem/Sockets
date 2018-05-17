@@ -8,7 +8,7 @@ using System.Windows.Data;
 
 namespace Sockets.Chat.Client.GUI.Models.Convertors
 {
-    public class ScrollToBollConverter : IMultiValueConverter
+    public class ScrollToBoolConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {

@@ -80,7 +80,8 @@ namespace Sockets.Chat.Model.Servers
 
         protected void SendMessage(ChatMessage message, int clientId)
         {
-            SendMessage(message, Clients[clientId]);
+            if(Clients.IsExist(clientId))
+                SendMessage(message, Clients[clientId]);
         }
 
         protected void SendMessage(ChatMessage message, params int[] clientIds)

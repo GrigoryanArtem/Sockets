@@ -13,6 +13,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using MaterialDesignThemes.Wpf;
+using System.Text.RegularExpressions;
 
 namespace Sockets.Chat.Client.GUI.Models
 {
@@ -56,6 +58,8 @@ namespace Sockets.Chat.Client.GUI.Models
 
         public ObservableCollection<ChatUser> Users { get; private set; }
             = new ObservableCollection<ChatUser>();
+        public SnackbarMessageQueue NotificationQueue { get; private set; } 
+            = new SnackbarMessageQueue(TimeSpan.FromSeconds(3));
 
         #endregion
 
@@ -78,8 +82,15 @@ namespace Sockets.Chat.Client.GUI.Models
 
         public void SendMessage(string message)
         {
+            RegexOptions options = RegexOptions.Multiline;
+            ChatUser recipient = null;
+
+            var match = Regex.Match(message, TCPChatConstants.PrivateMessageRegex, options);
+            if (match.Success)
+                recipient = ChatUser.Parse(match.Groups["username"].Value);
+
             mChatCore.SendMessage(ChatMessage.Create(MessageCode.Message, 
-                mUser, null, DateTime.Now, message));
+                mUser, recipient, DateTime.Now, message));
         }
 
         private void ReceiveData(TcpClient client)
@@ -105,7 +116,7 @@ namespace Sockets.Chat.Client.GUI.Models
         private void OnNewMessage(ChatMessage message)
         {
             Application.Current.Dispatcher.Invoke(() => Messages.Add(
-                    ProxyChatMessage.CurrentUserMessage(message, message.Sender.Id == mUser.Id)));
+                    ProxyChatMessage.CreateMessageByUser(message, mUser)));
         }
 
         [MessageHandler(MessageCode.ServerName)]
@@ -120,9 +131,12 @@ namespace Sockets.Chat.Client.GUI.Models
         [MessageHandler(MessageCode.ServerUsers)]
         private void OnServerUsers(ChatMessage message)
         {
+            if (String.IsNullOrEmpty(message.Message) || String.IsNullOrWhiteSpace(message.Message))
+                return;
+
             var users = message.Message
-                .Split(' ')
-                .Select(user => ChatUser.Parse(user));
+            .Split(' ')
+            .Select(user => ChatUser.Parse(user));
 
             Application.Current.Dispatcher.Invoke(() => Users.AddRange(users));          
         }
@@ -133,6 +147,9 @@ namespace Sockets.Chat.Client.GUI.Models
             var user = ChatUser.Parse(message.Message);
 
             Application.Current.Dispatcher.Invoke(() => Users.Add(user));
+
+            if(user.Id != mUser.Id)
+                Task.Factory.StartNew(() => NotificationQueue.Enqueue($"New user: {user.Name}", "OK", (username) => { }, user.Name));
         }
 
         [MessageHandler(MessageCode.UserLeave)]
@@ -140,8 +157,11 @@ namespace Sockets.Chat.Client.GUI.Models
         {
             var user = Users.FirstOrDefault(u => u.Id.ToString() == message.Message);
 
-            if(user != null)
+            if (user != null)
+            {
                 Application.Current.Dispatcher.Invoke(() => Users.Remove(user));
+                Task.Factory.StartNew(() => NotificationQueue.Enqueue($"User {user.Name} leave", "OK", (username) => { }, user.Name));
+            }
         }
 
         #endregion

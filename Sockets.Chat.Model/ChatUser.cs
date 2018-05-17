@@ -21,7 +21,7 @@ namespace Sockets.Chat.Model
 
         public override string ToString()
         {
-            return $"{Id}#{Name}";
+            return $"{Name}#{Id}";
         }
 
         public static ChatUser Parse(string user)

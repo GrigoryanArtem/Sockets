@@ -1,4 +1,5 @@
-﻿using Prism.Commands;
+﻿using MaterialDesignThemes.Wpf;
+using Prism.Commands;
 using Prism.Mvvm;
 using Sockets.Chat.Client.GUI.Models;
 using Sockets.Chat.Client.GUI.Models.Navigation;
@@ -74,6 +75,14 @@ namespace Sockets.Chat.Client.GUI.ViewModels
             get
             {
                 return mChatModel.Users;
+            }
+        }
+
+        public SnackbarMessageQueue NotificationQueue
+        {
+            get
+            {
+                return mChatModel.NotificationQueue;
             }
         }
 

@@ -78,10 +78,12 @@
     </ApplicationDefinition>
     <Compile Include="Models\ChatModel.cs" />
     <Compile Include="Models\ChatService.cs" />
+    <Compile Include="Models\Convertors\MessageTypeToColorZoneModeConverter.cs" />
     <Compile Include="Models\Convertors\BoolToHorizontalAlignmentConverter.cs" />
     <Compile Include="Models\Convertors\EmptyToBooleanConverter.cs" />
     <Compile Include="Models\Convertors\EmptyToVisibleConverter.cs" />
-    <Compile Include="Models\Convertors\ScrollToBollConverter.cs" />
+    <Compile Include="Models\Convertors\ScrollToBoolConverter.cs" />
+    <Compile Include="Models\MessageType.cs" />
     <Compile Include="Models\Navigation\Navigator.cs" />
     <Compile Include="Models\ProxyChatMessage.cs" />
     <Compile Include="Models\Resources\ResourcesService.cs" />
