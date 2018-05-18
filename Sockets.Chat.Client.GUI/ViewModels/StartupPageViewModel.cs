@@ -3,12 +3,15 @@ using Prism.Mvvm;
 using Sockets.Chat.Client.GUI.Models;
 using Sockets.Chat.Client.GUI.Models.Navigation;
 using Sockets.Chat.Client.GUI.Views;
+using Sockets.Chat.Model.Clients;
+using System;
 
 namespace Sockets.Chat.Client.GUI.ViewModels
 {
     public class StartupPageViewModel : BindableBase
     {
         private ChatModel mModel;
+        private string mErrorMessage;
 
         public StartupPageViewModel()
         {
@@ -16,6 +19,7 @@ namespace Sockets.Chat.Client.GUI.ViewModels
             mModel.PropertyChanged += (s, e) => { RaisePropertyChanged(e.PropertyName); };
 
             StartChatCommand = new DelegateCommand(() => StartChat());
+            ClearErrorCommand = new DelegateCommand(() => ErrorMessage = String.Empty);
         }
 
         #region Properties
@@ -44,16 +48,40 @@ namespace Sockets.Chat.Client.GUI.ViewModels
             }
         }
 
+        public string ErrorMessage
+        {
+            get
+            {
+                return mErrorMessage;
+            }
+            set
+            {
+                mErrorMessage = value;
+                RaisePropertyChanged(nameof(ErrorMessage));
+            }
+        }
+
         #endregion
 
         #region Private methods
 
         private void StartChat()
         {
-            mModel.Save();
+            try
+            {
+                mModel.Save();
 
-            var chatPage = new ChatPage();
-            Navigator.Navigate(chatPage, new ChatPageViewModel());
+                var chatPage = new ChatPage();
+                Navigator.Navigate(chatPage, new ChatPageViewModel());
+            }
+            catch(ServerUnavailableException)
+            {
+                ErrorMessage = "The server is currently unavailable, please try again later.";
+            }
+            catch (Exception e)
+            {
+                ErrorMessage = e.Message; 
+            }
         }
 
         #endregion
@@ -61,6 +89,7 @@ namespace Sockets.Chat.Client.GUI.ViewModels
         #region Commands
 
         public DelegateCommand StartChatCommand { get; }
+        public DelegateCommand ClearErrorCommand { get; }
 
         #endregion
     }

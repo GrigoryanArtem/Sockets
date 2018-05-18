@@ -60,6 +60,7 @@
     <Compile Include="Servers\DefaultTCPChatServer.cs" />
     <Compile Include="Servers\ITCPChatServer.cs" />
     <Compile Include="Servers\MessageHandlerAttribute.cs" />
+    <Compile Include="Clients\ServerUnavailableException.cs" />
     <Compile Include="Servers\TCPChatServer.cs" />
   </ItemGroup>
   <ItemGroup>

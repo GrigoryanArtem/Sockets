@@ -16,117 +16,150 @@
             <convertors:EmptyToBooleanConverter x:Key="ETBConverter" />
         </ResourceDictionary>
     </Page.Resources>
-    
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="auto" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+    <materialDesign:DialogHost 
+        IsOpen="{Binding ErrorMessage.Length, Mode=OneWay, Converter={StaticResource ETBConverter}}">
 
-        <materialDesign:Card
-            Grid.Row="1" Grid.Column="1"
-            Padding="10"
-            Height="400" Width="350">
-            
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                </Grid.RowDefinitions>
+        <materialDesign:DialogHost.DialogContent>
+            <StackPanel
+                MaxWidth="200" MaxHeight="300"
+                Margin="16">
 
-                <TextBlock 
-                    Style="{StaticResource MaterialDesignDisplay1TextBlock}"
-                    HorizontalAlignment="Center"
-                    Text="{DynamicResource rProjectName}"/>
+                <TextBlock
+                    Style="{StaticResource MaterialDesignHeadlineTextBlock}"
+                    TextAlignment="Center"
+                    Margin="0 8"
+                    TextWrapping="Wrap"
+                    Text="{DynamicResource rError}" />
 
-                <Image
-                    Grid.Row="1"
-                    HorizontalAlignment="Center"
-                    Width="auto" Height="auto"
-                    Source="../Resources/logo.png" />
+                <ScrollViewer
+                    VerticalScrollBarVisibility="Auto">
 
-                <TextBox 
-                    x:Name="ctrUserNameTB"
-                    Grid.Row="2"
-                    Margin="50 3"
-                    Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                    materialDesign:HintAssist.Hint="{DynamicResource rUsername}" >
-                    
-                    <Binding 
-                        Path="UserName"
-                        UpdateSourceTrigger="PropertyChanged"
-                        NotifyOnValidationError="True"
-                        ValidatesOnNotifyDataErrors="True">
+                    <TextBlock
+                        TextAlignment="Center"
+                        Margin="0 8"
+                        TextWrapping="Wrap"
+                        Text="{Binding ErrorMessage}" />
+                </ScrollViewer>
 
-                        <Binding.ValidationRules>
-                            <ExceptionValidationRule/>
-                            <rules:UserNameRule />
-                        </Binding.ValidationRules>
-                    </Binding>
-                </TextBox>
+                <Button 
+                    Margin="0 8"
+                    Content="{DynamicResource rOk}"
+                    Command="{Binding ClearErrorCommand}"/>
+            </StackPanel>
+        </materialDesign:DialogHost.DialogContent>
 
-                <TextBox 
-                    x:Name="ctrlIpAddressTB"
-                    Grid.Row="3"
-                    Margin="50 3"
-                    Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                    materialDesign:HintAssist.Hint="{DynamicResource rServerAddress}">
-                    
-                    <Binding 
-                        Path="IPAddress"
-                        UpdateSourceTrigger="PropertyChanged"
-                        NotifyOnValidationError="True"
-                        ValidatesOnNotifyDataErrors="True">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-                        <Binding.ValidationRules>
-                            <ExceptionValidationRule/>
-                            <rules:IpAddressRule />
-                        </Binding.ValidationRules>
-                    </Binding>
-                </TextBox>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
 
-                <Button
-                    Grid.Row="4"
-                    Margin="50 3"
-                    Content="{DynamicResource rConnect}"
-                    Command="{Binding StartChatCommand}">
+            <materialDesign:Card
+                Grid.Row="1" Grid.Column="1"
+                Padding="10"
+                Height="400" Width="350">
 
-                    <Button.Style>
-                        <Style 
-                            BasedOn="{StaticResource MaterialDesignRaisedButton}"
-                            TargetType="{x:Type Button}">
-                            <Setter 
-                                Property="IsEnabled" 
-                                Value="False"/>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
 
-                            <Style.Triggers>
-                                <MultiDataTrigger>
-                                    <MultiDataTrigger.Conditions>
-                                        <Condition Binding="{Binding Path=(Validation.HasError), ElementName=ctrUserNameTB}" Value="False"/>
-                                        <Condition Binding="{Binding Path=(Validation.HasError), ElementName=ctrlIpAddressTB}" Value="False"/>
-                                        <Condition Binding="{Binding Path=Text.Length, ElementName=ctrUserNameTB, Converter={StaticResource ETBConverter}}" Value="True"/>
-                                        <Condition Binding="{Binding Path=Text.Length, ElementName=ctrlIpAddressTB, Converter={StaticResource ETBConverter}}" Value="True"/>
-                                    </MultiDataTrigger.Conditions>
-                                    
-                                    <Setter 
-                                        Property="IsEnabled" 
-                                        Value="True"/>
-                                </MultiDataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                </Button>
-            </Grid>
-        </materialDesign:Card>
-    </Grid>
+                    <TextBlock 
+                        Style="{StaticResource MaterialDesignDisplay1TextBlock}"
+                        HorizontalAlignment="Center"
+                        Text="{DynamicResource rProjectName}"/>
+
+                    <Image
+                        Grid.Row="1"
+                        HorizontalAlignment="Center"
+                        Width="auto" Height="auto"
+                        Source="../Resources/logo.png" />
+
+                    <TextBox 
+                        x:Name="ctrUserNameTB"
+                        Grid.Row="2"
+                        Margin="50 3"
+                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                        materialDesign:HintAssist.Hint="{DynamicResource rUsername}" >
+
+                        <Binding 
+                            Path="UserName"
+                            UpdateSourceTrigger="PropertyChanged"
+                            NotifyOnValidationError="True"
+                            ValidatesOnNotifyDataErrors="True">
+
+                            <Binding.ValidationRules>
+                                <ExceptionValidationRule/>
+                                <rules:UserNameRule />
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox>
+
+                    <TextBox 
+                        x:Name="ctrlIpAddressTB"
+                        Grid.Row="3"
+                        Margin="50 3"
+                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                        materialDesign:HintAssist.Hint="{DynamicResource rServerAddress}">
+
+                        <Binding 
+                            Path="IPAddress"
+                            UpdateSourceTrigger="PropertyChanged"
+                            NotifyOnValidationError="True"
+                            ValidatesOnNotifyDataErrors="True">
+
+                            <Binding.ValidationRules>
+                                <ExceptionValidationRule/>
+                                <rules:IpAddressRule />
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox>
+
+                    <Button
+                        Grid.Row="4"
+                        Margin="50 3"
+                        Content="{DynamicResource rConnect}"
+                        Command="{Binding StartChatCommand}">
+
+                        <Button.Style>
+                            <Style 
+                                BasedOn="{StaticResource MaterialDesignRaisedButton}"
+                                TargetType="{x:Type Button}">
+                                <Setter 
+                                    Property="IsEnabled" 
+                                    Value="False"/>
+
+                                <Style.Triggers>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding Path=(Validation.HasError), ElementName=ctrUserNameTB}" Value="False"/>
+                                            <Condition Binding="{Binding Path=(Validation.HasError), ElementName=ctrlIpAddressTB}" Value="False"/>
+                                            <Condition Binding="{Binding Path=Text.Length, ElementName=ctrUserNameTB, Converter={StaticResource ETBConverter}}" Value="True"/>
+                                            <Condition Binding="{Binding Path=Text.Length, ElementName=ctrlIpAddressTB, Converter={StaticResource ETBConverter}}" Value="True"/>
+                                        </MultiDataTrigger.Conditions>
+
+                                        <Setter 
+                                            Property="IsEnabled" 
+                                            Value="True"/>
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </Grid>
+            </materialDesign:Card>
+        </Grid>
+    </materialDesign:DialogHost>
 </Page>

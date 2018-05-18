@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
@@ -31,7 +32,13 @@ namespace Sockets.Chat.Model.Clients
         public void Connect(ParameterizedThreadStart receiveData)
         {
             mClient = new TcpClient();
-            mClient.Connect(IPAddress, Port);
+
+            var connection = mClient.BeginConnect(IPAddress, Port, null, null);
+            var success = connection.AsyncWaitHandle.WaitOne(
+                TimeSpan.FromSeconds(Constants.ConnectionTimeout));
+
+            if (!success)
+                throw new ServerUnavailableException();
 
             mNetworkStream = mClient.GetStream();
             mReceiveDataThread = new Thread(receiveData);
