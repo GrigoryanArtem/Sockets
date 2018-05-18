@@ -11,7 +11,7 @@ namespace Sockets.Chat.Model.Servers
 
         protected override void OnNewMessage(ChatMessage message)
         {
-            Logger.Debug($"{message.Sender} sent message. {message}");
+            Logger.Trace($"{message.Sender} sent message. {message}");
         }
 
         #region Handlers

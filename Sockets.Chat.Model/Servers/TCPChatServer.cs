@@ -63,7 +63,7 @@ namespace Sockets.Chat.Model.Servers
                 SendMessage(ChatMessage.Create(MessageCode.ServerName, ServerUser,
                     new ChatUser(currentId), DateTime.Now, String.Empty), currentId);
 
-                Logger.Debug($"#{currentId} connected!");
+                Logger.Info($"#{currentId} connected!");
 
                 Thread t = new Thread(HandleClients);
                 t.Start(currentId);
@@ -133,7 +133,7 @@ namespace Sockets.Chat.Model.Servers
 
                 Broadcast(ChatMessage.Create(MessageCode.UserLeave, ServerUser, null, DateTime.Now, id.ToString()));
 
-                Logger.Debug($"#{id} has left.");
+                Logger.Info($"#{id} has left.");
 
                 client.Client.Shutdown(SocketShutdown.Both);
                 client.Close();
@@ -164,6 +164,8 @@ namespace Sockets.Chat.Model.Servers
                     stream.Write(buffer, 0, buffer.Length);
                 }
             }
+
+            Logger.Trace($"Server sent message: {message}");
         }
 
         #endregion  
