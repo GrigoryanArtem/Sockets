@@ -1,4 +1,4 @@
-﻿using Sockets.Chat.Model.Loggers;
+﻿using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,14 +29,14 @@ namespace Sockets.Chat.Model.Servers
 
         #endregion
 
-        public TCPChatServer(int port, string serverName, ILogger logger = null)
+        public TCPChatServer(int port, string serverName, ILogger logger)
         {
             lock (_lock)
             {
                 Port = port;
                 ServerUser = new ChatUser(Constants.ServerId, serverName);
 
-                Logger = logger ?? ConsoleLogger.Instance;
+                Logger = logger;
             }
 
             mMessageHandlers = new MessageHandlersService(this);

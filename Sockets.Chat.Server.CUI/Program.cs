@@ -1,5 +1,5 @@
-﻿using Sockets.Chat.Model;
-using Sockets.Chat.Model.Loggers;
+﻿using NLog;
+using Sockets.Chat.Model;
 using Sockets.Chat.Model.Servers;
 using System;
 
@@ -9,14 +9,19 @@ namespace Sockets.Chat.Server.CUI
     {
         static void Main(string[] args)
         {
+            var logger = LogManager.GetCurrentClassLogger();
+
             try
             {
-                ITCPChatServer server = new DefaultTCPChatServer(11000, "Server");
+                int port = Convert.ToInt32(args[1]);
+                string serverName = args[0];
+
+                ITCPChatServer server = new DefaultTCPChatServer(port, serverName, logger);
                 server.Start();
             }
             catch(Exception e)
             {
-                ConsoleLogger.Instance.Error(e.Message);
+                logger.Error(e.Message);
             }
         }
     }

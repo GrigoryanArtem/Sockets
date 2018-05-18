@@ -1,4 +1,4 @@
-﻿using Sockets.Chat.Model.Loggers;
+﻿using NLog;
 using System;
 using System.Linq;
 
@@ -6,7 +6,7 @@ namespace Sockets.Chat.Model.Servers
 {
     public class DefaultTCPChatServer : TCPChatServer
     {
-        public DefaultTCPChatServer(int port, string serverName, ILogger logger = null)
+        public DefaultTCPChatServer(int port, string serverName, ILogger logger)
             : base(port, serverName, logger) { }
 
         protected override void OnNewMessage(ChatMessage message)
