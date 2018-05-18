@@ -122,7 +122,7 @@ namespace Sockets.Chat.Client.GUI.Models
         [MessageHandler(MessageCode.ServerName)]
         private void OnRegistration(ChatMessage message)
         {
-            mServerName = message.Sender.Name;
+            ServerName = message.Sender.Name;
 
             mUser.Id = message.Recipient.Id;
             SendMessage(ChatMessage.Create(MessageCode.Registration, mUser, new ChatUser(0, mServerName), DateTime.Now, String.Empty));
