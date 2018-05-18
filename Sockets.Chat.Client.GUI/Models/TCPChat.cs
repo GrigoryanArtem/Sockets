@@ -22,8 +22,7 @@ namespace Sockets.Chat.Client.GUI.Models
     {
         #region Members
 
-        private TCPChatCore mChatCore;
-        private MessageHandlersService mMessageHandlers;
+        private ITCPChatClient mChatCore;
 
         private ChatUser mUser;
         private string mServerName;
@@ -33,9 +32,7 @@ namespace Sockets.Chat.Client.GUI.Models
         public TCPChat(string username, string ipAddress)
         {
             mUser = new ChatUser(0, username);
-            mChatCore = new TCPChatCore(ipAddress, Properties.Settings.Default.Port);
-
-            mMessageHandlers = new MessageHandlersService(this);
+            mChatCore = new TCPChatCore(ipAddress, Properties.Settings.Default.Port, this);
         }
 
         #region Properties
@@ -67,7 +64,7 @@ namespace Sockets.Chat.Client.GUI.Models
 
         public void Connect()
         {
-            mChatCore.Connect(client => ReceiveData((TcpClient)client));
+            mChatCore.Connect();
         }
 
         public void Disconnect()
@@ -91,21 +88,6 @@ namespace Sockets.Chat.Client.GUI.Models
 
             mChatCore.SendMessage(ChatMessage.Create(MessageCode.Message, 
                 mUser, recipient, DateTime.Now, message));
-        }
-
-        private void ReceiveData(TcpClient client)
-        {
-            NetworkStream ns = client.GetStream();
-            byte[] receivedBytes = new byte[TCPChatConstants.DefaultMessageSize];
-            int byte_count;
-
-            while ((byte_count = ns.Read(receivedBytes, 0, receivedBytes.Length)) > 0)
-            {
-                var messageData = Encoding.UTF8.GetString(receivedBytes, 0, byte_count);
-                var message = ChatMessage.Parse(messageData);
-
-                mMessageHandlers.Invoke(message);
-            }
         }
 
         #endregion

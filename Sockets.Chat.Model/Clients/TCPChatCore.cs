@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 
 namespace Sockets.Chat.Model.Clients
@@ -9,16 +10,21 @@ namespace Sockets.Chat.Model.Clients
     {
         #region Members
 
-        TcpClient mClient;
-        NetworkStream mNetworkStream;
-        Thread mReceiveDataThread;
+        private TcpClient mClient;
+        private NetworkStream mNetworkStream;
+        private Thread mReceiveDataThread;
+
+        private MessageHandlersService mMessageHandlers;
 
         #endregion
 
-        public TCPChatCore(string ipAddress, int port)
+        public TCPChatCore(string ipAddress, int port, object handler = null)
         {
             IPAddress = IPAddress.Parse(ipAddress);
             Port = port;
+
+            if(handler != null)
+                mMessageHandlers = new MessageHandlersService(handler);
         }
 
         #region Properties
@@ -29,7 +35,7 @@ namespace Sockets.Chat.Model.Clients
         #endregion
 
         #region Public methods
-        public void Connect(ParameterizedThreadStart receiveData)
+        public void Connect()
         {
             mClient = new TcpClient();
 
@@ -41,7 +47,7 @@ namespace Sockets.Chat.Model.Clients
                 throw new ServerUnavailableException();
 
             mNetworkStream = mClient.GetStream();
-            mReceiveDataThread = new Thread(receiveData);
+            mReceiveDataThread = new Thread(client => ReceiveData((TcpClient)client));
 
             mReceiveDataThread.Start(mClient);
         }
@@ -61,6 +67,25 @@ namespace Sockets.Chat.Model.Clients
         {
             byte[] buffer = message.ToByteArray();
             mNetworkStream.Write(buffer, 0, buffer.Length);
+        }
+
+        #endregion
+
+        #region Private methods
+
+        private void ReceiveData(TcpClient client)
+        {
+            NetworkStream ns = client.GetStream();
+            byte[] receivedBytes = new byte[Constants.MessageSize];
+            int byte_count;
+
+            while ((byte_count = ns.Read(receivedBytes, 0, receivedBytes.Length)) > 0)
+            {
+                var messageData = Encoding.UTF8.GetString(receivedBytes, 0, byte_count);
+                var message = ChatMessage.Parse(messageData);
+
+                mMessageHandlers?.Invoke(message);
+            }
         }
 
         #endregion
