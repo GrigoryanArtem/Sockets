@@ -56,11 +56,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ChatClients.cs" />
-    <Compile Include="ChatMessage.cs" />
-    <Compile Include="ChatUser.cs" />
+    <Compile Include="Data\Clients\ChatClient.cs" />
+    <Compile Include="Data\Clients\ChatClients.cs" />
+    <Compile Include="Data\ChatMail.cs" />
+    <Compile Include="Data\Messages\ChatMessage.cs" />
+    <Compile Include="Data\Clients\ChatRoomClient.cs" />
+    <Compile Include="Data\ChatUser.cs" />
     <Compile Include="Clients\ITCPChatClient.cs" />
     <Compile Include="Clients\TCPChatCore.cs" />
+    <Compile Include="Data\Clients\DefaultChatClient.cs" />
+    <Compile Include="Data\Clients\IChatClient.cs" />
+    <Compile Include="Data\Messages\ChatMessageText.cs" />
     <Compile Include="GlobalIPAddress.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="MessageCode.cs" />

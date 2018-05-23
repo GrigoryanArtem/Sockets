@@ -1,7 +1,8 @@
 ﻿using NLog;
+using Sockets.Chat.Model.Data;
+using Sockets.Chat.Model.Data.Clients;
+using Sockets.Chat.Model.Data.Messages;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -14,9 +15,8 @@ namespace Sockets.Chat.Model.Servers
         #region Members
 
         private readonly object _lock = new object();
-
         private MessageHandlersService mMessageHandlers;
-
+        
         #endregion
 
         #region Properties
@@ -25,13 +25,16 @@ namespace Sockets.Chat.Model.Servers
         public int Port { get; set; }
 
         protected ChatClients Clients { get; private set; } = new ChatClients();
+        protected ChatMail ChatMail { get; private set; }
         protected ILogger Logger { get; private set; }
+              
+        protected object Locker => _lock;
 
         #endregion
 
         public TCPChatServer(int port, string serverName, ILogger logger)
         {
-            lock (_lock)
+            lock (Locker)
             {
                 Port = port;
                 ServerUser = new ChatUser(Constants.ServerId, serverName);
@@ -39,6 +42,7 @@ namespace Sockets.Chat.Model.Servers
                 Logger = logger;
             }
 
+            ChatMail = new ChatMail(Clients);
             mMessageHandlers = new MessageHandlersService(this);
         }
 
@@ -57,11 +61,14 @@ namespace Sockets.Chat.Model.Servers
             {
                 TcpClient client = ServerSocket.AcceptTcpClient();
 
-                lock (_lock)
-                    Clients.Add(currentId, client);
+                var chatClient = ChatClient.Create(currentId, client);
+                chatClient.Locker = Locker;
 
-                SendMessage(ChatMessage.Create(MessageCode.ServerName, ServerUser,
-                    new ChatUser(currentId), DateTime.Now, String.Empty), currentId);
+                lock (Locker)
+                    Clients.Add(chatClient);
+
+                ChatMail.SendMessage(ChatMessage.Create(MessageCode.ServerName, ServerUser,
+                    new ChatUser(currentId), DateTime.Now, ChatMessageText.CreateEmpty()), currentId);
 
                 Logger.Info($"#{currentId} connected!");
 
@@ -78,22 +85,6 @@ namespace Sockets.Chat.Model.Servers
 
         protected abstract void OnNewMessage(ChatMessage message);
 
-        protected void SendMessage(ChatMessage message, int clientId)
-        {
-            if(Clients.IsExist(clientId))
-                SendMessage(message, Clients[clientId]);
-        }
-
-        protected void SendMessage(ChatMessage message, params int[] clientIds)
-        {
-            SendMessage(message, Clients.GetRegisteredClients(clientIds));
-        }
-
-        protected void Broadcast(ChatMessage message)
-        {
-            SendMessage(message, Clients.RegestredClients);
-        }
-
         #endregion
 
         #region Private methods
@@ -103,8 +94,8 @@ namespace Sockets.Chat.Model.Servers
             int id = (int)clientId;
             TcpClient client;
 
-            lock (_lock)
-                client = Clients[id];
+            lock (Locker)
+                client = (Clients[id] as ChatClient)?.Client;
 
             try
             {
@@ -128,10 +119,11 @@ namespace Sockets.Chat.Model.Servers
             }
             finally
             {
-                lock (_lock)
+                lock (Locker)
                     Clients.Remove(id);
 
-                Broadcast(ChatMessage.Create(MessageCode.UserLeave, ServerUser, null, DateTime.Now, id.ToString()));
+                ChatMail.SendMessage(ChatMessage.Create(MessageCode.UserLeave, ServerUser, 
+                    null, DateTime.Now, ChatMessageText.Create(id.ToString())));
 
                 Logger.Info($"#{id} has left.");
 
@@ -144,28 +136,6 @@ namespace Sockets.Chat.Model.Servers
         {
             OnNewMessage(message);
             mMessageHandlers.Invoke(message);
-        }
-
-        private void SendMessage(ChatMessage message, params TcpClient[] clients)
-        {
-            SendMessage(message, clients.Select(client => client));
-        }
-
-        private void SendMessage(ChatMessage message, IEnumerable<TcpClient> clients)
-        {
-            byte[] buffer = message.ToByteArray();
-
-            lock (_lock)
-            {
-                foreach (TcpClient c in clients)
-                {
-                    NetworkStream stream = c.GetStream();
-
-                    stream.Write(buffer, 0, buffer.Length);
-                }
-            }
-
-            Logger.Trace($"Server sent message: {message}");
         }
 
         #endregion  

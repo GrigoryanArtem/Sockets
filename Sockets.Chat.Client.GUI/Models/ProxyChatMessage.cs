@@ -1,50 +1,36 @@
-﻿using Sockets.Chat.Model;
-using System;
-using System.Text.RegularExpressions;
+﻿using Sockets.Chat.Model.Data;
+using Sockets.Chat.Model.Data.Messages;
+using System.Linq;
 
 namespace Sockets.Chat.Client.GUI.Models
 {
     public class ProxyChatMessage : ChatMessage
     {
-        public ProxyChatMessage(ChatMessage message, bool isCurrentUserMessage, MessageType messageType)
+        public ProxyChatMessage(ChatMessage message, bool isCurrentUserMessage)
             : base(message.Code, message.Sender, message.Recipient, message.Date, message.Message)
         {
             IsCurrentUserMessage = isCurrentUserMessage;
-            MessageType = messageType;
         }
 
         public bool IsCurrentUserMessage { get; private set;}
         public MessageType MessageType { get; private set; }
 
-        public static ProxyChatMessage CurrentUserMessage(ChatMessage message, bool isCurrentUserMessage, MessageType messageType)
+        internal static ProxyChatMessage CreateMessageByUser(ChatMessage message, ChatUser mUser)
         {
-            return new ProxyChatMessage(message, isCurrentUserMessage, messageType);
-        }
-
-        public static ProxyChatMessage CreateMessageByUser(ChatMessage message, ChatUser user)
-        {
-            RegexOptions options = RegexOptions.Multiline;
-
-            bool isCurrentUserMessage = (message.Sender.Id == user.Id);
-            MessageType messageType = MessageType.Default;
-
-            var match = Regex.Match(message.Message, TCPChatConstants.PrivateMessageRegex, options);
-            if (match.Success && ChatUser.Parse(match.Groups["username"].Value).Id == user.Id)
-                messageType = MessageType.Private | messageType;
-
-            message.Message = Regex.Replace(message.Message, TCPChatConstants.PrivateMessageRegex, String.Empty);
-
-            foreach (Match m in Regex.Matches(message.Message, TCPChatConstants.SelectedMessageRegex, options))
+            ProxyChatMessage result = new ProxyChatMessage(message, mUser.Equals(message.Sender))
             {
-                var curentUser = ChatUser.Parse(m.Groups["username"].Value);
+                MessageType = MessageType.Default
+            };
 
-                if (messageType < MessageType.Selected && curentUser.Id == user.Id)
-                    messageType = MessageType.Selected | messageType;
+            bool? isMentionedUser = message.Message.MentionedUsers?.Contains(mUser);
+            if (isMentionedUser != null && (bool)isMentionedUser)
+                result.MessageType = MessageType.Mention;
 
-                message.Message = Regex.Replace(message.Message, m.Value, curentUser.Name);           
-            }
+            bool? isRecipientUser = message.Message.Recipient?.Equals(mUser);
+            if (isRecipientUser != null && (bool)isRecipientUser)
+                result.MessageType = MessageType.Recipient;
 
-            return CurrentUserMessage(message, isCurrentUserMessage, messageType);
+            return result;
         }
     }
 }

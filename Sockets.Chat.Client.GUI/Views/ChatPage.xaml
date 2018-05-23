@@ -193,7 +193,7 @@
 
                                         <TextBlock 
                                             TextWrapping="Wrap"
-                                            Text="{Binding Message}"/>
+                                            Text="{Binding Message.Message}"/>
                                     </GroupBox>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>

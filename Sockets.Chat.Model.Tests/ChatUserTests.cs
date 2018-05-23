@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sockets.Chat.Model;
+using Sockets.Chat.Model.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,16 +23,36 @@ namespace Sockets.Chat.Model.Tests
         {
             ChatUser user = new ChatUser(1, "name");
 
-            Assert.AreEqual("1#name", user.ToString());
+            Assert.AreEqual("name#1", user.ToString());
         }
 
         [TestMethod()]
         public void ParseTest()
         {
-            ChatUser user = ChatUser.Parse("1#name");
+            ChatUser user = ChatUser.Parse("name#1");
 
             Assert.AreEqual(user.Id, 1);
             Assert.AreEqual(user.Name, "name");
+        }
+
+        [TestMethod()]
+        public void EqualsTest()
+        {
+            ChatUser user = ChatUser.Parse("name#1");
+            ChatUser user2 = user;
+            ChatUser user3 = ChatUser.Parse("name#1");
+
+            Assert.IsTrue(user.Equals(user2));
+            Assert.IsTrue(user.Equals(user3));
+
+            Assert.IsTrue(user == user2);
+            Assert.IsTrue(user != user3);
+
+            ChatUser[] users = new ChatUser[] { user, user2, user3 };
+
+            var t = users.Where(u => u.Equals(user));
+
+            Assert.AreEqual(3, t.Count());
         }
     }
 }

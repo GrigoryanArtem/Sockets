@@ -8,5 +8,7 @@
         internal static int UserIdIncrementValue => 1;
         internal static int ConnectionTimeout => 1;
         internal static int MessageSize => 4096;
+        internal static string MentionedUsersRegex => @"@(?<username>[^#]+#\d+)";
+        internal static string RecipientRegex => @"^>(?<username>.+?#\d+)";
     }
 }

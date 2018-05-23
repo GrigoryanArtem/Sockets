@@ -1,4 +1,5 @@
 ﻿using Sockets.Chat.Model;
+using Sockets.Chat.Model.Data.Messages;
 using System;
 using System.Collections.Generic;
 using System.Linq;

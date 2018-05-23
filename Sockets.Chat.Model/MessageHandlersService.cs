@@ -1,4 +1,6 @@
-﻿using Sockets.Chat.Model.Servers;
+﻿using Sockets.Chat.Model.Data;
+using Sockets.Chat.Model.Data.Messages;
+using Sockets.Chat.Model.Servers;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,4 +1,6 @@
-﻿using System.Threading;
+﻿using Sockets.Chat.Model.Data;
+using Sockets.Chat.Model.Data.Messages;
+using System.Threading;
 
 namespace Sockets.Chat.Model.Clients
 {

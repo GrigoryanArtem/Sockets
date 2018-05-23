@@ -1,4 +1,6 @@
 ﻿using NLog;
+using Sockets.Chat.Model.Data;
+using Sockets.Chat.Model.Data.Messages;
 using System;
 using System.Linq;
 
@@ -21,20 +23,20 @@ namespace Sockets.Chat.Model.Servers
         {
             Logger.Debug($"Registration new user: {message.Sender.Name}.");
 
-            Clients.Registration(message.Sender.Id, message.Sender.Name);
+            Clients[message.Sender.Id].Name = message.Sender.Name;
             
-            Broadcast(ChatMessage.Create(MessageCode.NewUser, ServerUser, null, DateTime.Now, message.Sender.ToString()));
-            SendMessage(ChatMessage.Create(MessageCode.ServerUsers, ServerUser, message.Sender,
-                DateTime.Now, String.Join(" ", Clients.RegestredUsers.Where(user => user.Id != message.Sender.Id))), message.Sender.Id);
+            ChatMail.SendMessage(ChatMessage.Create(MessageCode.NewUser, ServerUser, null, DateTime.Now, ChatMessageText.Create(message.Sender.ToString())));
+            ChatMail.SendMessage(ChatMessage.Create(MessageCode.ServerUsers, ServerUser, message.Sender,
+                DateTime.Now, ChatMessageText.Create(String.Join(" ", Clients.RegestredUsers.Where(user => user.Id != message.Sender.Id).Select(user => user.User)))), message.Sender.Id);
         }
 
         [MessageHandler(MessageCode.Message)]
         private void OnNewUserMessage(ChatMessage message)
         {
             if (message.Recipient is null)
-                Broadcast(message);
+                ChatMail.SendMessage(message);
             else
-                SendMessage(message, message.Recipient.Id);
+                ChatMail.SendMessage(message, message.Recipient.Id);
         }
 
         #endregion

@@ -20,10 +20,10 @@ namespace Sockets.Chat.Client.GUI.Models.Convertors
                 case MessageType.Default:
                     result = ColorZoneMode.PrimaryLight;
                     break;
-                case MessageType.Selected:
+                case MessageType.Mention:
                     result = ColorZoneMode.PrimaryDark;
                     break;
-                case MessageType.Private:
+                case MessageType.Recipient:
                     result = ColorZoneMode.Accent;
                     break;
                 default:

@@ -15,6 +15,8 @@ using System.Windows;
 using System.Windows.Threading;
 using MaterialDesignThemes.Wpf;
 using System.Text.RegularExpressions;
+using Sockets.Chat.Model.Data;
+using Sockets.Chat.Model.Data.Messages;
 
 namespace Sockets.Chat.Client.GUI.Models
 {
@@ -79,15 +81,10 @@ namespace Sockets.Chat.Client.GUI.Models
 
         public void SendMessage(string message)
         {
-            RegexOptions options = RegexOptions.Multiline;
-            ChatUser recipient = null;
-
-            var match = Regex.Match(message, TCPChatConstants.PrivateMessageRegex, options);
-            if (match.Success)
-                recipient = ChatUser.Parse(match.Groups["username"].Value);
+            ChatMessageText messageText = ChatMessageText.Create(message);
 
             mChatCore.SendMessage(ChatMessage.Create(MessageCode.Message, 
-                mUser, recipient, DateTime.Now, message));
+                mUser, messageText.Recipient, DateTime.Now, messageText));
         }
 
         #endregion
@@ -106,17 +103,17 @@ namespace Sockets.Chat.Client.GUI.Models
         {
             ServerName = message.Sender.Name;
 
-            mUser.Id = message.Recipient.Id;
-            SendMessage(ChatMessage.Create(MessageCode.Registration, mUser, new ChatUser(0, mServerName), DateTime.Now, String.Empty));
+            mUser = new ChatUser(message.Recipient.Id, mUser.Name);
+            SendMessage(ChatMessage.Create(MessageCode.Registration, mUser, new ChatUser(0, mServerName), DateTime.Now, ChatMessageText.CreateEmpty()));
         }
 
         [MessageHandler(MessageCode.ServerUsers)]
         private void OnServerUsers(ChatMessage message)
         {
-            if (String.IsNullOrEmpty(message.Message) || String.IsNullOrWhiteSpace(message.Message))
+            if (String.IsNullOrEmpty(message.Message.Message) || String.IsNullOrWhiteSpace(message.Message.Message))
                 return;
 
-            var users = message.Message
+            var users = message.Message.Message
             .Split(' ')
             .Select(user => ChatUser.Parse(user));
 
@@ -126,7 +123,7 @@ namespace Sockets.Chat.Client.GUI.Models
         [MessageHandler(MessageCode.NewUser)]
         private void OnNewUser(ChatMessage message)
         {
-            var user = ChatUser.Parse(message.Message);
+            var user = ChatUser.Parse(message.Message.Message);
 
             Application.Current.Dispatcher.Invoke(() => Users.Add(user));
 
@@ -137,7 +134,7 @@ namespace Sockets.Chat.Client.GUI.Models
         [MessageHandler(MessageCode.UserLeave)]
         private void OnUserLeave(ChatMessage message)
         {
-            var user = Users.FirstOrDefault(u => u.Id.ToString() == message.Message);
+            var user = Users.FirstOrDefault(u => u.Id.ToString() == message.Message.Message);
 
             if (user != null)
             {
