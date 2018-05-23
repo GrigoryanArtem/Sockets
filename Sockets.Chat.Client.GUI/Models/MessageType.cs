@@ -3,7 +3,6 @@
     public enum MessageType
     {
         Default,
-        Mention,
-        Recipient
+        Mention
     }
 }

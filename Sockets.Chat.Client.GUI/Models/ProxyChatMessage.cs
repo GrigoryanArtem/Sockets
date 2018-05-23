@@ -26,10 +26,6 @@ namespace Sockets.Chat.Client.GUI.Models
             if (isMentionedUser != null && (bool)isMentionedUser)
                 result.MessageType = MessageType.Mention;
 
-            bool? isRecipientUser = message.Message.Recipient?.Equals(mUser);
-            if (isRecipientUser != null && (bool)isRecipientUser)
-                result.MessageType = MessageType.Recipient;
-
             return result;
         }
     }

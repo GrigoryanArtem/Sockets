@@ -8,9 +8,8 @@ namespace Sockets.Chat.Model.Data.Messages
     {
         #region Properties
 
-        public string Message { get; set; }
+        public string Text { get; set; }
         public ChatUser[] MentionedUsers { get; set; }
-        public ChatUser Recipient { get; set; }
 
         #endregion
 
@@ -20,25 +19,18 @@ namespace Sockets.Chat.Model.Data.Messages
         {
             ChatMessageText result = new ChatMessageText();
             RegexOptions options = RegexOptions.Multiline;
-
-            var recipientMatch = Regex.Match(message, Constants.RecipientRegex, options);
-
-            if (recipientMatch.Success)
-                result.Recipient = ChatUser.Parse(recipientMatch.Groups["username"].Value);
-
-            message = Regex.Replace(message, Constants.RecipientRegex, String.Empty);
-
+           
             List<ChatUser> mentionedUsersUsers = new List<ChatUser>();
             foreach (Match match in Regex.Matches(message, Constants.MentionedUsersRegex, options))
             {
-                var user = ChatUser.Parse(match.Groups["username"].Value);
+                var user = ChatUser.Parse(match.Groups[Constants.UsernameRegexGroup].Value);
                 
                 message = Regex.Replace(message, match.Value, user.Name);
                 mentionedUsersUsers.Add(user);
             }
 
             result.MentionedUsers = mentionedUsersUsers.ToArray();
-            result.Message = message;
+            result.Text = message;
 
             return result;
         }
