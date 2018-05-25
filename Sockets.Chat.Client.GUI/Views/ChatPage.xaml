@@ -45,13 +45,14 @@
                         Grid.Row="0"
                         Margin="10,0,15,5"
                         Style="{StaticResource MaterialDesignHeadlineTextBlock}"
-                        Text="{DynamicResource rUsers}"
+                        Text="{DynamicResource rRooms}"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
                         DockPanel.Dock="Top" />
                     
                     <ListView 
-                        ItemsSource="{Binding Users}"
+                        SelectedItem="{Binding RoomsManager.CurrentRoom}"
+                        ItemsSource="{Binding RoomsManager.Rooms}"
                         Grid.Row="1"
                         x:Name="DemoItemsListBox"
                         Margin="0 16 0 16"
@@ -66,7 +67,7 @@
                 <materialDesign:ColorZone 
                     DockPanel.Dock="Top"
                     Grid.Row="0"
-                    Padding="10" 
+                    Padding="5" 
                     materialDesign:ShadowAssist.ShadowDepth="Depth2"
                     Mode="PrimaryMid">
 
@@ -90,10 +91,18 @@
                         </materialDesign:PopupBox>
 
                         <TextBlock 
+                            DockPanel.Dock="Top" 
                             HorizontalAlignment="Center"
                             FontSize="22"
                             Style="{StaticResource MaterialDesignHeadlineTextBlock}"
                             Text="{Binding ServerName}" />
+
+                        <TextBlock 
+                            DockPanel.Dock="Bottom" 
+                            HorizontalAlignment="Center"
+                            FontSize="12"
+                            Style="{StaticResource MaterialDesignHeadlineTextBlock}"
+                            Text="{Binding RoomsManager.CurrentRoom.Name}" />
 
                     </DockPanel>
 
@@ -124,7 +133,6 @@
 
                             <TextBox.InputBindings>
                                 <KeyBinding 
-                                    Modifiers="Shift" 
                                     Key="Enter" 
                                     Command="{Binding SendMessageCommand}" />
                             </TextBox.InputBindings>
@@ -149,7 +157,7 @@
 
                         <ItemsControl
                             Margin="0 3 0 0"
-                            ItemsSource="{Binding Messages}">
+                            ItemsSource="{Binding RoomsManager.CurrentRoom.Messages}">
 
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>

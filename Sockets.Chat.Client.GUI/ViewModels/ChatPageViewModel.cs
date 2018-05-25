@@ -20,7 +20,7 @@ namespace Sockets.Chat.Client.GUI.ViewModels
     {
         private TCPChat mChatModel;
         private string mCurrentMessage;
-
+        
         public ChatPageViewModel()
         {
             InitializeChatCore();
@@ -63,22 +63,6 @@ namespace Sockets.Chat.Client.GUI.ViewModels
             }
         }
 
-        public ObservableCollection<ProxyChatMessage> Messages
-        {
-            get
-            {
-                return mChatModel.Messages;
-            }
-        }
-
-        public ObservableCollection<ChatUser> Users
-        {
-            get
-            {
-                return mChatModel.Users;
-            }
-        }
-
         public SnackbarMessageQueue NotificationQueue
         {
             get
@@ -86,6 +70,9 @@ namespace Sockets.Chat.Client.GUI.ViewModels
                 return mChatModel.NotificationQueue;
             }
         }
+
+        public RoomsManager RoomsManager => mChatModel.RoomsManager;
+
 
         #endregion
 

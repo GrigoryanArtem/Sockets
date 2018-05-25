@@ -88,6 +88,8 @@
     <Compile Include="Models\Navigation\Navigator.cs" />
     <Compile Include="Models\ProxyChatMessage.cs" />
     <Compile Include="Models\Resources\ResourcesService.cs" />
+    <Compile Include="Models\Room.cs" />
+    <Compile Include="Models\RoomsManager.cs" />
     <Compile Include="Models\ScrollScroller.cs" />
     <Compile Include="Models\TCPChat.cs" />
     <Compile Include="Models\ValidationRules\IpAddressRule.cs" />

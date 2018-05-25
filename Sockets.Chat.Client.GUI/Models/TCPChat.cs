@@ -26,6 +26,7 @@ namespace Sockets.Chat.Client.GUI.Models
 
         private ITCPChatClient mChatCore;
 
+        private Room mPublicRoom;
         private ChatUser mUser;
         private string mServerName;
 
@@ -35,6 +36,11 @@ namespace Sockets.Chat.Client.GUI.Models
         {
             mUser = new ChatUser(0, username);
             mChatCore = new TCPChatCore(ipAddress, Properties.Settings.Default.Port, this);
+
+            mPublicRoom = new Room("Public");
+
+            RoomsManager.Rooms.Add(mPublicRoom);
+            RoomsManager.CurrentRoom = mPublicRoom;
         }
 
         #region Properties
@@ -52,11 +58,9 @@ namespace Sockets.Chat.Client.GUI.Models
             }
         }
 
-        public ObservableCollection<ProxyChatMessage> Messages { get; private set; } 
-            = new ObservableCollection<ProxyChatMessage>();
+        public RoomsManager RoomsManager { get; private set; }
+           = new RoomsManager();
 
-        public ObservableCollection<ChatUser> Users { get; private set; }
-            = new ObservableCollection<ChatUser>();
         public SnackbarMessageQueue NotificationQueue { get; private set; } 
             = new SnackbarMessageQueue(TimeSpan.FromSeconds(3));
 
@@ -83,19 +87,46 @@ namespace Sockets.Chat.Client.GUI.Models
         {
             ChatMessageText messageText = ChatMessageText.Create(message);
 
-            mChatCore.SendMessage(ChatMessage.Create(MessageCode.Message, 
-                mUser, null, DateTime.Now, messageText));
+            mChatCore.SendMessage(ChatMessage.Create(GetMessageCodeByRecipient(RoomsManager.CurrentRoom.Recipient), 
+                mUser, RoomsManager.CurrentRoom.Recipient, DateTime.Now, messageText));
+        }
+
+        private MessageCode GetMessageCodeByRecipient(ChatUser recipient)
+        {
+            return recipient is null ? MessageCode.PublicMessage : MessageCode.Message;
         }
 
         #endregion
 
         #region Handlers
 
+
+        [MessageHandler(MessageCode.PublicMessage)]
+        private void OnNewPublicMessage(ChatMessage message)
+        {
+            Application.Current.Dispatcher.Invoke(() => {
+                mPublicRoom.Messages.Add(ProxyChatMessage.CreateMessageByUser(message, mUser));
+            });
+        }
+
         [MessageHandler(MessageCode.Message)]
         private void OnNewMessage(ChatMessage message)
         {
-            Application.Current.Dispatcher.Invoke(() => Messages.Add(
-                    ProxyChatMessage.CreateMessageByUser(message, mUser)));
+            Application.Current.Dispatcher.Invoke(() => {
+                RoomsManager.Rooms
+                .FirstOrDefault(r => (r.Recipient != null && r.Recipient.Equals(message.Sender)))
+                ?.Messages.Add(ProxyChatMessage.CreateMessageByUser(message, mUser));
+            });
+        }
+
+        [MessageHandler(MessageCode.RepeatMessage)]
+        private void OnRepeatMEssage(ChatMessage message)
+        {
+            Application.Current.Dispatcher.Invoke(() => {
+                RoomsManager.Rooms
+                .FirstOrDefault(r => (r.Recipient != null && r.Recipient.Equals(message.Recipient)))
+                ?.Messages.Add(ProxyChatMessage.CreateMessageByUser(message, mUser));
+            });
         }
 
         [MessageHandler(MessageCode.ServerName)]
@@ -116,8 +147,12 @@ namespace Sockets.Chat.Client.GUI.Models
             var users = message.Message.Text
             .Split(' ')
             .Select(user => ChatUser.Parse(user));
+            var rooms = users.Select(u => new Room(u.Name, u));
 
-            Application.Current.Dispatcher.Invoke(() => Users.AddRange(users));          
+            Application.Current.Dispatcher.Invoke(() => {
+                mPublicRoom.Users.AddRange(users);
+                RoomsManager.Rooms.AddRange(rooms);
+            });
         }
 
         [MessageHandler(MessageCode.NewUser)]
@@ -125,21 +160,29 @@ namespace Sockets.Chat.Client.GUI.Models
         {
             var user = ChatUser.Parse(message.Message.Text);
 
-            Application.Current.Dispatcher.Invoke(() => Users.Add(user));
+            Application.Current.Dispatcher.Invoke(() => {
+                mPublicRoom.Users.Add(user);
+                RoomsManager.Rooms.Add(new Room(user.Name, user));
+            });
 
-            if(user.Id != mUser.Id)
-                Task.Factory.StartNew(() => NotificationQueue.Enqueue($"New user: {user.Name}", "OK", (username) => { }, user.Name));
+            if (user.Id != mUser.Id)
+                Task.Factory.StartNew(() => NotificationQueue.Enqueue($"A new user {user.Name} has joined", "OK", (username) => { }, user.Name));
         }
 
         [MessageHandler(MessageCode.UserLeave)]
         private void OnUserLeave(ChatMessage message)
         {
-            var user = Users.FirstOrDefault(u => u.Id.ToString() == message.Message.Text);
+            var user = mPublicRoom.Users.FirstOrDefault(u => u.Id.ToString() == message.Message.Text);
+            var room = RoomsManager.Rooms.FirstOrDefault(r => r.Recipient != null && r.Recipient.Equals(user));
 
             if (user != null)
             {
-                Application.Current.Dispatcher.Invoke(() => Users.Remove(user));
-                Task.Factory.StartNew(() => NotificationQueue.Enqueue($"User {user.Name} leave", "OK", (username) => { }, user.Name));
+                Application.Current.Dispatcher.Invoke(() => {
+                    mPublicRoom.Users.Remove(user);
+                    RoomsManager.Rooms.Remove(room);
+                });
+
+                Task.Factory.StartNew(() => NotificationQueue.Enqueue($"User {user.Name} left the chat", "OK", (username) => { }, user.Name));
             }
         }
 

@@ -8,9 +8,10 @@
     <v:String x:Key="rConnect">Let's go!</v:String>
     <v:String x:Key="rCopyright">© Artem Grigoryan 2018</v:String>
     <v:String x:Key="rSend">Send</v:String>
-    <v:String x:Key="rMessage">Your message...</v:String>
+    <v:String x:Key="rMessage">Write a message...</v:String>
     <v:String x:Key="rDisconnect">Disconnect</v:String>
     <v:String x:Key="rUsers">Users</v:String>
+    <v:String x:Key="rRooms">Rooms</v:String>
     <v:String x:Key="rError">Error</v:String>
     <v:String x:Key="rOk">OK</v:String>
 </ResourceDictionary>

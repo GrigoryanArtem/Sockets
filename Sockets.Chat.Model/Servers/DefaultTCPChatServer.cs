@@ -30,13 +30,21 @@ namespace Sockets.Chat.Model.Servers
                 DateTime.Now, ChatMessageText.Create(String.Join(" ", Clients.RegestredUsers.Where(user => user.Id != message.Sender.Id).Select(user => user.User)))), message.Sender.Id);
         }
 
+        [MessageHandler(MessageCode.PublicMessage)]
+        private void OnNewUserPublicMessage(ChatMessage message)
+        {            
+                ChatMail.SendMessage(message);            
+        }
+
         [MessageHandler(MessageCode.Message)]
         private void OnNewUserMessage(ChatMessage message)
         {
             if (message.Recipient is null)
-                ChatMail.SendMessage(message);
-            else
-                ChatMail.SendMessage(message, message.Recipient.Id);
+                throw new ArgumentException(nameof(message));
+
+            ChatMail.SendMessage(ChatMessage.Create(MessageCode.RepeatMessage, message.Sender,
+                message.Recipient, message.Date, message.Message), message.Sender.Id);
+            ChatMail.SendMessage(message, message.Recipient.Id);
         }
 
         #endregion

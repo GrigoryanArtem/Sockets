@@ -33,6 +33,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AsyncSockets", "AsyncSocket
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sockets.Chat.Model.Tests", "Sockets.Chat.Model.Tests\Sockets.Chat.Model.Tests.csproj", "{24E5E069-793D-4038-AEF0-902A74F86A9A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortListener", "PortListener\PortListener.csproj", "{D042734C-D528-4898-8564-554C09555ACE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,10 @@ Global
 		{24E5E069-793D-4038-AEF0-902A74F86A9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24E5E069-793D-4038-AEF0-902A74F86A9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{24E5E069-793D-4038-AEF0-902A74F86A9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D042734C-D528-4898-8564-554C09555ACE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D042734C-D528-4898-8564-554C09555ACE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D042734C-D528-4898-8564-554C09555ACE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D042734C-D528-4898-8564-554C09555ACE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
