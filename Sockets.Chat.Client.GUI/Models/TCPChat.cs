@@ -1,22 +1,15 @@
-﻿using Prism.Mvvm;
+﻿using MaterialDesignThemes.Wpf;
+using Prism.Mvvm;
 using Sockets.Chat.Model;
 using Sockets.Chat.Model.Clients;
-using Sockets.Chat.Model.Servers;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Threading;
-using MaterialDesignThemes.Wpf;
-using System.Text.RegularExpressions;
 using Sockets.Chat.Model.Data;
 using Sockets.Chat.Model.Data.Messages;
+using Sockets.Chat.Model.Servers;
+using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
 
 namespace Sockets.Chat.Client.GUI.Models
 {

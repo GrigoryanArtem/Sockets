@@ -1,13 +1,9 @@
-﻿using Sockets.Chat.Model;
-using Sockets.Chat.Model.Data.Messages;
+﻿using Sockets.Chat.Model.Data.Messages;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Sockets.Chat.Client.CUI
 {

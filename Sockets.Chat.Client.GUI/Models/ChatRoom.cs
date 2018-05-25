@@ -1,12 +1,7 @@
 ﻿using Prism.Mvvm;
-using Sockets.Chat.Model;
 using Sockets.Chat.Model.Data;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sockets.Chat.Client.GUI.Models
 {

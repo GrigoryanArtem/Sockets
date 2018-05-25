@@ -5,14 +5,8 @@ using Sockets.Chat.Client.GUI.Models;
 using Sockets.Chat.Client.GUI.Models.Navigation;
 using Sockets.Chat.Client.GUI.Models.Resources;
 using Sockets.Chat.Client.GUI.Views;
-using Sockets.Chat.Model;
 using Sockets.Chat.Model.Data;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sockets.Chat.Client.GUI.ViewModels
 {

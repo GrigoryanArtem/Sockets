@@ -1,5 +1,4 @@
-﻿using Sockets.Chat.Model.Data;
-using Sockets.Chat.Model.Data.Messages;
+﻿using Sockets.Chat.Model.Data.Messages;
 using System;
 using System.Net;
 using System.Net.Sockets;

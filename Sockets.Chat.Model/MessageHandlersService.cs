@@ -1,12 +1,9 @@
-﻿using Sockets.Chat.Model.Data;
-using Sockets.Chat.Model.Data.Messages;
+﻿using Sockets.Chat.Model.Data.Messages;
 using Sockets.Chat.Model.Servers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sockets.Chat.Model
 {
