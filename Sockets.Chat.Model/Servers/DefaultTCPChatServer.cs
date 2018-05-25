@@ -24,7 +24,8 @@ namespace Sockets.Chat.Model.Servers
             Logger.Debug($"Registration new user: {message.Sender.Name}.");
 
             Clients[message.Sender.Id].Name = message.Sender.Name;
-            
+
+
             ChatMail.SendMessage(ChatMessage.Create(MessageCode.NewUser, ServerUser, null, DateTime.Now, ChatMessageText.Create(message.Sender.ToString())));
             ChatMail.SendMessage(ChatMessage.Create(MessageCode.ServerUsers, ServerUser, message.Sender,
                 DateTime.Now, ChatMessageText.Create(String.Join(" ", Clients.RegestredUsers.Where(user => user.Id != message.Sender.Id).Select(user => user.User)))), message.Sender.Id);
@@ -42,8 +43,10 @@ namespace Sockets.Chat.Model.Servers
             if (message.Recipient is null)
                 throw new ArgumentException(nameof(message));
 
-            ChatMail.SendMessage(ChatMessage.Create(MessageCode.RepeatMessage, message.Sender,
-                message.Recipient, message.Date, message.Message), message.Sender.Id);
+            if (!message.Sender.Equals(message.Recipient))
+                ChatMail.SendMessage(ChatMessage.Create(MessageCode.RepeatMessage, message.Sender,
+                    message.Recipient, message.Date, message.Message), message.Sender.Id);
+
             ChatMail.SendMessage(message, message.Recipient.Id);
         }
 

@@ -41,6 +41,8 @@ namespace Sockets.Chat.Client.GUI.Models
 
             RoomsManager.Rooms.Add(mPublicRoom);
             RoomsManager.CurrentRoom = mPublicRoom;
+
+            RoomsManager.PropertyChanged += (s, e) => RaisePropertyChanged(e.PropertyName);
         }
 
         #region Properties
@@ -63,6 +65,7 @@ namespace Sockets.Chat.Client.GUI.Models
 
         public SnackbarMessageQueue NotificationQueue { get; private set; } 
             = new SnackbarMessageQueue(TimeSpan.FromSeconds(3));
+        public int NumberOfUnreadMessages => RoomsManager.NumberOfUnreadMessages;
 
         #endregion
 
@@ -96,6 +99,11 @@ namespace Sockets.Chat.Client.GUI.Models
             return recipient is null ? MessageCode.PublicMessage : MessageCode.Message;
         }
 
+        private void AddMessage(ChatMessage message, Room room)
+        {
+            RoomsManager.AddMessage(ProxyChatMessage.CreateMessageByUser(message, mUser), room);
+        }
+
         #endregion
 
         #region Handlers
@@ -104,29 +112,21 @@ namespace Sockets.Chat.Client.GUI.Models
         [MessageHandler(MessageCode.PublicMessage)]
         private void OnNewPublicMessage(ChatMessage message)
         {
-            Application.Current.Dispatcher.Invoke(() => {
-                mPublicRoom.Messages.Add(ProxyChatMessage.CreateMessageByUser(message, mUser));
-            });
+            AddMessage(message, mPublicRoom);
         }
 
         [MessageHandler(MessageCode.Message)]
         private void OnNewMessage(ChatMessage message)
         {
-            Application.Current.Dispatcher.Invoke(() => {
-                RoomsManager.Rooms
-                .FirstOrDefault(r => (r.Recipient != null && r.Recipient.Equals(message.Sender)))
-                ?.Messages.Add(ProxyChatMessage.CreateMessageByUser(message, mUser));
-            });
+            AddMessage(message, RoomsManager.Rooms.FirstOrDefault(
+                r => (r.Recipient != null && r.Recipient.Equals(message.Sender))));
         }
 
         [MessageHandler(MessageCode.RepeatMessage)]
         private void OnRepeatMEssage(ChatMessage message)
         {
-            Application.Current.Dispatcher.Invoke(() => {
-                RoomsManager.Rooms
-                .FirstOrDefault(r => (r.Recipient != null && r.Recipient.Equals(message.Recipient)))
-                ?.Messages.Add(ProxyChatMessage.CreateMessageByUser(message, mUser));
-            });
+            AddMessage(message, RoomsManager.Rooms.FirstOrDefault(
+                r => (r.Recipient != null && r.Recipient.Equals(message.Recipient))));
         }
 
         [MessageHandler(MessageCode.ServerName)]
@@ -147,7 +147,7 @@ namespace Sockets.Chat.Client.GUI.Models
             var users = message.Message.Text
             .Split(' ')
             .Select(user => ChatUser.Parse(user));
-            var rooms = users.Select(u => new Room(u.Name, u));
+            var rooms = users.Select(u => Room.CreateRoomByUser(u, u, mUser));
 
             Application.Current.Dispatcher.Invoke(() => {
                 mPublicRoom.Users.AddRange(users);
@@ -159,10 +159,12 @@ namespace Sockets.Chat.Client.GUI.Models
         private void OnNewUser(ChatMessage message)
         {
             var user = ChatUser.Parse(message.Message.Text);
+            var room = (user.Equals(mUser)) ? Room.CreateSelfRoom(user) : 
+                Room.CreateRoomByUser(user, user, mUser);
 
             Application.Current.Dispatcher.Invoke(() => {
                 mPublicRoom.Users.Add(user);
-                RoomsManager.Rooms.Add(new Room(user.Name, user));
+                RoomsManager.Rooms.Add(room);
             });
 
             if (user.Id != mUser.Id)

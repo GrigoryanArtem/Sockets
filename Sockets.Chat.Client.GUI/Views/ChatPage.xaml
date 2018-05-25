@@ -17,14 +17,18 @@
             <convertors:BoolToHorizontalAlignmentConverter x:Key="BHAConverter" />
             <convertors:MessageTypeToColorZoneModeConverter x:Key="BTCZMonverter" />
             <convertors:ScrollToBoolConverter x:Key="ScrollConverter" />
+            <convertors:IntToNullConverter x:Key="ITNConverter" />
         </ResourceDictionary>
     </Page.Resources>
 
 
     <materialDesign:DialogHost 
         Identifier="RootDialog">
+
         <materialDesign:DrawerHost 
-            IsLeftDrawerOpen="{Binding ElementName=ctrlMenuToggleButton, Path=IsChecked}">
+            IsLeftDrawerOpen="{Binding ElementName=ctrlMenuToggleButton, Path=IsChecked}"
+            IsRightDrawerOpen="{Binding IsUsersOpen}">
+            
             
             <materialDesign:DrawerHost.LeftDrawerContent>
                 <Grid 
@@ -55,35 +59,112 @@
                         ItemsSource="{Binding RoomsManager.Rooms}"
                         Grid.Row="1"
                         x:Name="DemoItemsListBox"
-                        Margin="0 16 0 16"
-                        DisplayMemberPath="Name">
+                        Margin="0 16 0 16">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel
+                                    Orientation="Horizontal">
+
+                                    <TextBlock
+                                        Text="{Binding Name}" />
+
+
+                                    <Border
+                                        Visibility="{Binding NumberOfUnreadMessages, Converter={StaticResource ETVConverter}}"
+                                        VerticalAlignment="Top"
+                                        CornerRadius="4"
+                                        Margin="4 0"
+                                        Padding="4 0"
+                                        Background="{StaticResource PrimaryHueDarkBrush}">
+                                        
+                                        <TextBlock
+                                            FontSize="10"
+                                            Foreground="{StaticResource PrimaryHueDarkForegroundBrush}"
+                                            Text="{Binding NumberOfUnreadMessages}" />
+                                    </Border>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
                     </ListView>
                 </Grid>
             </materialDesign:DrawerHost.LeftDrawerContent>
 
+            <materialDesign:DrawerHost.RightDrawerContent>
+                <DockPanel
+                    Margin="16"
+                    MinWidth="212"
+                    LastChildFill="True">
+
+                    <TextBlock
+                        Margin="10,0,15,5"
+                        DockPanel.Dock="Top"
+                        Style="{StaticResource MaterialDesignHeadlineTextBlock}"
+                        Text="{DynamicResource rUsers}" />
+
+                    <ScrollViewer
+                        VerticalScrollBarVisibility="Auto">
+
+                        <ItemsControl
+                            Margin="0 16 0 16"
+                            ItemsSource="{Binding RoomsManager.CurrentRoom.Users}">
+
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Vertical"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button
+                                        Style="{StaticResource MaterialDesignFlatButton}"
+                                        Foreground="{DynamicResource SecondaryAccentForegroundBrush}"
+                                        FontWeight="Normal"
+                                        HorizontalContentAlignment="Left"
+                                        Content="{Binding Name}" 
+                                        Command="{Binding DataContext.MentionUserCommand,
+                                            RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                        CommandParameter="{Binding}"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </materialDesign:DrawerHost.RightDrawerContent>
+            
             <DockPanel
                 LastChildFill="True">
 
                 <materialDesign:ColorZone 
                     DockPanel.Dock="Top"
                     Grid.Row="0"
-                    Padding="5" 
+                    Padding="5 7" 
                     materialDesign:ShadowAssist.ShadowDepth="Depth2"
                     Mode="PrimaryMid">
 
                     <DockPanel>
 
-                        <ToggleButton 
-                            Style="{StaticResource MaterialDesignHamburgerToggleButton}" 
-                            IsChecked="False"
-                            x:Name="ctrlMenuToggleButton"/>
-
+                        <materialDesign:Badged 
+                            VerticalAlignment="Center"
+                            Badge="{Binding NumberOfUnreadMessages, Mode=OneWay, Converter={StaticResource ITNConverter}}" 
+                            BadgeColorZoneMode="PrimaryDark">
+                            
+                            <ToggleButton 
+                                Margin="0 -5"
+                                Style="{StaticResource MaterialDesignHamburgerToggleButton}" 
+                                IsChecked="False"
+                                x:Name="ctrlMenuToggleButton"/>
+                        </materialDesign:Badged>
+                        
                         <materialDesign:PopupBox 
                             DockPanel.Dock="Right" 
                             PlacementMode="BottomAndAlignRightEdges"
                             StaysOpen="False">
 
                             <StackPanel>
+                                <Button
+                                    Content="{DynamicResource rUsers}"
+                                    Command="{Binding OpenUsersCommand}"/>
+                                
                                 <Button
                                     Content="{DynamicResource rDisconnect}"
                                     Command="{Binding DisconnectCommand}"/>
@@ -118,6 +199,15 @@
                             <ColumnDefinition Width="auto" />
                         </Grid.ColumnDefinitions>
 
+                        <Button 
+                            Height="auto" Width="auto"
+                            Margin="5"
+                            Grid.Column="1"
+                            Visibility="{Binding ElementName=ctrlMessageTB, Path=Text.Length, Converter={StaticResource ETVConverter}}"
+                            Command="{Binding SendMessageCommand}">
+                            <materialDesign:PackIcon Kind="Send" />
+                        </Button>
+                        
                         <TextBox
                             MaxLength="650"
                             x:Name="ctrlMessageTB"
@@ -137,15 +227,6 @@
                                     Command="{Binding SendMessageCommand}" />
                             </TextBox.InputBindings>
                         </TextBox>
-
-                        <Button 
-                            Height="auto" Width="auto"
-                            Margin="5"
-                            Grid.Column="1"
-                            Visibility="{Binding ElementName=ctrlMessageTB, Path=Text.Length, Converter={StaticResource ETVConverter}}"
-                            Command="{Binding SendMessageCommand}">
-                            <materialDesign:PackIcon Kind="Send" />
-                        </Button>
                     </Grid>
                 </materialDesign:Card>
 
@@ -179,7 +260,7 @@
                                         <GroupBox.HeaderTemplate>
                                             <DataTemplate>
                                                 <DockPanel 
-                                                       LastChildFill="False">
+                                                        LastChildFill="False">
 
 
                                                     <TextBlock 
@@ -216,7 +297,6 @@
                         x:Name="SnackbarThree" />
                 </Grid>
             </DockPanel>
-            
         </materialDesign:DrawerHost>
     </materialDesign:DialogHost>
 </Page>

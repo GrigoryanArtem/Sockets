@@ -9,6 +9,7 @@ namespace Sockets.Chat.Client.GUI.Models
         #region Members
 
         private string mName;
+        private int mNumberOfUnreadMessages;
 
         #endregion
 
@@ -24,6 +25,16 @@ namespace Sockets.Chat.Client.GUI.Models
             = new ObservableCollection<ProxyChatMessage>();
         public ChatUser Recipient { get; set; }
 
+        public int NumberOfUnreadMessages
+        {
+            get => mNumberOfUnreadMessages;
+            set
+            {
+                mNumberOfUnreadMessages = value;
+                RaisePropertyChanged(nameof(NumberOfUnreadMessages));
+            }
+        }
+
         public string Name
         {
             get => mName;
@@ -34,5 +45,21 @@ namespace Sockets.Chat.Client.GUI.Models
             }
         }
 
+
+        public static Room CreateRoomByUser(ChatUser mainUser, params ChatUser[] users)
+        {
+            var result = new Room(mainUser.Name, mainUser);
+            result.Users.AddRange(users);
+
+            return result;
+        }
+
+        public static Room CreateSelfRoom(ChatUser user)
+        {
+            var result = new Room("Saved messages", user);
+            result.Users.Add(user);
+
+            return result;
+        }
     }
 }

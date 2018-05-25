@@ -79,6 +79,7 @@
     <Compile Include="Models\ChatModel.cs" />
     <Compile Include="Models\ChatRoom.cs" />
     <Compile Include="Models\ChatService.cs" />
+    <Compile Include="Models\Convertors\IntToNullConverter.cs" />
     <Compile Include="Models\Convertors\MessageTypeToColorZoneModeConverter.cs" />
     <Compile Include="Models\Convertors\BoolToHorizontalAlignmentConverter.cs" />
     <Compile Include="Models\Convertors\EmptyToBooleanConverter.cs" />

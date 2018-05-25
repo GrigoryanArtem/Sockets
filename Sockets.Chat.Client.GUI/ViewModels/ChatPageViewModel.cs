@@ -20,14 +20,19 @@ namespace Sockets.Chat.Client.GUI.ViewModels
     {
         private TCPChat mChatModel;
         private string mCurrentMessage;
-        
+
+        private bool mIsUsersOpen;
+
         public ChatPageViewModel()
         {
             InitializeChatCore();
 
             SendMessageCommand = new DelegateCommand(() => SendMessage());
             DisconnectCommand = new DelegateCommand(() => Disconnect());
-        }
+            OpenUsersCommand = new DelegateCommand(() => IsUsersOpen = true);
+
+            MentionUserCommand = new DelegateCommand<ChatUser>(user => MentionUser(user));
+    }
 
         private void Disconnect()
         {
@@ -63,6 +68,19 @@ namespace Sockets.Chat.Client.GUI.ViewModels
             }
         }
 
+        public bool IsUsersOpen
+        {
+            get
+            {
+                return mIsUsersOpen;
+            }
+            set
+            {
+                mIsUsersOpen = value;
+                RaisePropertyChanged(nameof(IsUsersOpen));
+            }
+        }
+
         public SnackbarMessageQueue NotificationQueue
         {
             get
@@ -73,6 +91,7 @@ namespace Sockets.Chat.Client.GUI.ViewModels
 
         public RoomsManager RoomsManager => mChatModel.RoomsManager;
 
+        public int NumberOfUnreadMessages => mChatModel.NumberOfUnreadMessages;
 
         #endregion
 
@@ -93,13 +112,21 @@ namespace Sockets.Chat.Client.GUI.ViewModels
             CurrentMessage = String.Empty;
         }
 
+        private void MentionUser(ChatUser user)
+        {
+            CurrentMessage += $"@{user}";
+            IsUsersOpen = false;
+        }
+
         #endregion
 
         #region Commands
 
         public DelegateCommand SendMessageCommand { get; }
         public DelegateCommand DisconnectCommand { get; }
+        public DelegateCommand OpenUsersCommand { get; }
 
+        public DelegateCommand<ChatUser> MentionUserCommand { get; }
         #endregion
     }
 }
