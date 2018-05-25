@@ -1,4 +1,7 @@
-﻿using System.Windows;
+﻿// Copyright 2018 Grigoryan Artem
+// Licensed under the Apache License, Version 2.0
+
+using System.Windows;
 using System.Windows.Controls;
 
 namespace Sockets.Chat.Client.GUI.Models

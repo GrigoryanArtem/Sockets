@@ -1,4 +1,7 @@
-﻿using NLog;
+﻿// Copyright 2018 Grigoryan Artem
+// Licensed under the Apache License, Version 2.0
+
+using NLog;
 using Sockets.Chat.Model;
 using Sockets.Chat.Model.Servers;
 using System;

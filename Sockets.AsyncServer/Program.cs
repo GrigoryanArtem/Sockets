@@ -1,4 +1,7 @@
-﻿using Sockets.Model;
+﻿// Copyright 2018 Grigoryan Artem
+// Licensed under the Apache License, Version 2.0
+
+using Sockets.Model;
 using System;
 
 namespace Sockets.AsyncServer

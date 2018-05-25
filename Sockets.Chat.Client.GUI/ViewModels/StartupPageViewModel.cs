@@ -1,4 +1,7 @@
-﻿using Prism.Commands;
+﻿// Copyright 2018 Grigoryan Artem
+// Licensed under the Apache License, Version 2.0
+
+using Prism.Commands;
 using Prism.Mvvm;
 using Sockets.Chat.Client.GUI.Models;
 using Sockets.Chat.Client.GUI.Models.Navigation;

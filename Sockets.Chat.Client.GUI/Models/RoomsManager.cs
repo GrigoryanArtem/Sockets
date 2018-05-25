@@ -1,4 +1,7 @@
-﻿using Prism.Mvvm;
+﻿// Copyright 2018 Grigoryan Artem
+// Licensed under the Apache License, Version 2.0
+
+using Prism.Mvvm;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;

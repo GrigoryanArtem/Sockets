@@ -1,4 +1,7 @@
-﻿using Sockets.Chat.Client.GUI.ViewModels;
+﻿// Copyright 2018 Grigoryan Artem
+// Licensed under the Apache License, Version 2.0
+
+using Sockets.Chat.Client.GUI.ViewModels;
 using System.Windows.Controls;
 
 namespace Sockets.Chat.Client.GUI.Views

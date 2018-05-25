@@ -1,4 +1,7 @@
-﻿using MaterialDesignThemes.Wpf;
+﻿// Copyright 2018 Grigoryan Artem
+// Licensed under the Apache License, Version 2.0
+
+using MaterialDesignThemes.Wpf;
 using System;
 using System.Globalization;
 using System.Windows.Data;

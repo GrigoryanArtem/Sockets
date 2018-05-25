@@ -1,4 +1,7 @@
-﻿using Prism.Mvvm;
+﻿// Copyright 2018 Grigoryan Artem
+// Licensed under the Apache License, Version 2.0
+
+using Prism.Mvvm;
 using Sockets.Chat.Model.Data;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

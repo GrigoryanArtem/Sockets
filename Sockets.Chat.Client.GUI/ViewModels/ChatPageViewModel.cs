@@ -1,4 +1,7 @@
-﻿using MaterialDesignThemes.Wpf;
+﻿// Copyright 2018 Grigoryan Artem
+// Licensed under the Apache License, Version 2.0
+
+using MaterialDesignThemes.Wpf;
 using Prism.Commands;
 using Prism.Mvvm;
 using Sockets.Chat.Client.GUI.Models;

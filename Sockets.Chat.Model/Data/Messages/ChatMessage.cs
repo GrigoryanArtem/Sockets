@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿// Copyright 2018 Grigoryan Artem
+// Licensed under the Apache License, Version 2.0
+
+using Newtonsoft.Json;
 using System;
 using System.Text;
 

@@ -1,4 +1,7 @@
-﻿using Sockets.Chat.Client.GUI.Models.Navigation;
+﻿// Copyright 2018 Grigoryan Artem
+// Licensed under the Apache License, Version 2.0
+
+using Sockets.Chat.Client.GUI.Models.Navigation;
 using Sockets.Chat.Client.GUI.Models.Resources;
 using System.Windows;
 using System.Windows.Input;

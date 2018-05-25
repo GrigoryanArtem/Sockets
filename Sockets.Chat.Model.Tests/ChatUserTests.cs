@@ -1,4 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿// Copyright 2018 Grigoryan Artem
+// Licensed under the Apache License, Version 2.0
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sockets.Chat.Model;
 using Sockets.Chat.Model.Data;
 using System;

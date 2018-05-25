@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright 2018 Grigoryan Artem
+// Licensed under the Apache License, Version 2.0
+
+using System;
 using System.Text;
 using System.Net.Sockets;
 using System.Net;
